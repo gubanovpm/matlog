@@ -1,0 +1,19 @@
+~  = NOT
+|  = OR
++  = XOR
+&  = AND
+=  = EQUAL
+T  = TAUT
+F  = FALSE
+(  = RBRAC
+)  = LBRAC
+-> = IMPL
+
+PRIORITY:
+
+1) LBRAC RBRAC
+2) NOT
+3) AND
+4) OR, XOR
+5) IMPL
+6) EQUAL

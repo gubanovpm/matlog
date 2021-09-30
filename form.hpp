@@ -1,5 +1,7 @@
 #pragma once
+
 #include <iostream>
+#include <unordered_map>
 
 // description of all required types
 enum operation_t  { AND, OR, NOT, XOR, IMPL, EQUAL };

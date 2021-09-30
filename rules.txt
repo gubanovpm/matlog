@@ -3,11 +3,11 @@
 +  = XOR
 &  = AND
 =  = EQUAL
-T  = TAUT
-F  = FALSE
+┬  = TAUT           (ascii 194)
+┴  = LOGICAL FALSE  (ascii 193)
 (  = LBRAC
 )  = RBRAC
--> = IMPL
+→ = IMPL             (ascii 26)
 
 PRIORITY:
 

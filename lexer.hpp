@@ -6,7 +6,7 @@
 // description of all required types
 enum operation_t  { AND, OR, NOT, XOR, IMPL, EQUAL };
 enum braces_t     { LBRAC, RBRAC };
-enum lexem_kind_t { OP, BRAC, VAR , TAUT, FALSE};
+enum lexem_kind_t { OP, BRAC, VAR , T, F};
 enum node_kind_t  { NODE_OP, NODE_VAL };
 
 struct lexem_t {

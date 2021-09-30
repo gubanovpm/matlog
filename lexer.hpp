@@ -186,6 +186,9 @@ lex_array_t::lex_array_t(const char *str) {
 }
 
 lex_array_t::~lex_array_t() {
+	for (int i = 0; i < size_; ++i)
+		if (lexems_[i].kind == VAR)
+			delete [] lexems_[i].lex.var;
 	delete [] lexems_;
 }
 

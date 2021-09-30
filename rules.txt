@@ -5,8 +5,8 @@
 =  = EQUAL
 T  = TAUT
 F  = FALSE
-(  = RBRAC
-)  = LBRAC
+(  = LBRAC
+)  = RBRAC
 -> = IMPL
 
 PRIORITY:

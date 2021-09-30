@@ -6,7 +6,7 @@
 // description of all required types
 enum operation_t  { AND, OR, NOT, XOR, IMPL, EQUAL };
 enum braces_t     { LBRAC, RBRAC };
-enum lexem_kind_t { OP, BRACE, VAR , TAUT, FALSE};
+enum lexem_kind_t { OP, BRAC, VAR , TAUT, FALSE};
 enum node_kind_t  { NODE_OP, NODE_VAL };
 
 struct lexem_t {
@@ -23,7 +23,9 @@ struct lex_array_t {
 	int size;
 	int capacity;
 
-	lex_array_t(const char *str);
+	lex_array_t (const char *str);
+	void resize(int new_size);
+	~lex_array_t();
 };
 
 struct node_data_t {
@@ -42,6 +44,45 @@ struct node_t {
 //------------------------------------------------------------------------------------------------
 
 lex_array_t::lex_array_t(const char *str) {
-	// TODO : your code here
+	
+	size     = 0 ;
+	capacity = 10;
+	lexems   = new lexem_t [capacity];
+
+	int counter = 0;
+	while (str[counter] != '\0') {
+		if (size >= capacity) {
+			resize(2 * capacity);
+			capacity *= 2;
+		}
+		switch (str[counter]) {
+			case '(':
+				lexems[size].kind  = BRAC ;
+				lexems[size].lex.b = LBRAC;
+				break;
+
+			case ')':
+				lexems[size].kind  = BRAC;
+				lexems[size].lex.b = RBRAC;
+				break;
+
+			
+		}
+		size++;
+	}
 }
 
+lex_array_t::~lex_array_t() {
+	delete [] lexems;
+}
+
+void lex_array_t::resize(int new_size) {
+	lexem_t *new_lexems = new lexem_t [new_size];
+	int copy_size = (capacity < new_size) ? capacity : new_size ;
+	for (int i = 0; i < copy_size; ++i) {
+		new_lexems[i] = lexems[i];
+	}
+
+	delete [] lexems;
+	lexems = new_lexems;
+}

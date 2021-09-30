@@ -1,9 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <unordered_map>
 
-// description of all required types
 enum braces_t     { LBRAC = 0 , RBRAC };
 enum operation_t  { AND   = 11, OR , NOT , XOR , IMPL, EQUAL };
 enum lexem_kind_t { OP    = 21, BRAC, VAR , T, F};

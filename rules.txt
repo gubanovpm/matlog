@@ -1,13 +1,14 @@
+(  = LBRAC
+)  = RBRAC
+&  = AND
 ~  = NOT
 |  = OR
 +  = XOR
-&  = AND
+-> = IMPL
 =  = EQUAL
-┬  = TAUT           (ascii 194)
-┴  = LOGICAL FALSE  (ascii 193)
-(  = LBRAC
-)  = RBRAC
-→ = IMPL             (ascii 26)
+1  = TAUT
+0  = LOGICAL FALSE
+
 
 PRIORITY:
 

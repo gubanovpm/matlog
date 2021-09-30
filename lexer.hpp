@@ -13,8 +13,9 @@ struct lexem_t {
 	enum lexem_kind_t kind;
 	union {
 		enum operation_t op;
-		enum braces_t b;
+		enum braces_t    b;
 		char *var;
+		int  value;
 	} lex;
 };
 
@@ -42,8 +43,24 @@ struct node_t {
 	struct node_data_t data;
 };
 //------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------
+
+std::ostream &operator<< (std::ostream &left, lexem_t &) {
+	switch ()
+	{
+	case /* constant-expression */:
+		/* code */
+		break;
+	
+	default:
+		break;
+	}
+	return left;
+}
 
 lex_array_t::lex_array_t(const char *str) {
+
+	//std::cout << "→" << std::endl;
 	
 	size     = 0 ;
 	capacity = 10;
@@ -65,10 +82,59 @@ lex_array_t::lex_array_t(const char *str) {
 				lexems[size].kind  = BRAC;
 				lexems[size].lex.b = RBRAC;
 				break;
-
-			
+			case '~':
+				lexems[size].kind   = OP;
+				lexems[size].lex.op = NOT;
+				break;
+			case '&' :
+				lexems[size].kind   = OP;
+				lexems[size].lex.op = AND;
+				break;
+			case '|' :
+				lexems[size].kind   = OP;
+				lexems[size].lex.op = OR;
+				break;
+			case '+' :
+				lexems[size].kind   = OP;
+				lexems[size].lex.op = XOR;
+				break;
+			case '-' :
+				while (str[++counter] != '\0' && str[counter] != '>');
+				if (str[counter] != '>') {
+					std::cout << "Syntax error - unknow operation \'-\'!\n" ;
+					abort();
+				}
+				lexems[size].kind   = OP;
+				lexems[size].lex.op = IMPL;
+				break;
+			case '=' :
+				lexems[size].kind   = OP;
+				lexems[size].lex.op = EQUAL;
+				break;
+			case '1' :
+				lexems[size].kind      = T;
+				lexems[size].lex.value = 1;
+				break;
+			case '0' :
+				lexems[size].kind      = F;
+				lexems[size].lex.value = 0;
+				break;
+			default:
+				if (isalpha(str[counter])) {
+					std::string temp_name = "";
+					while (isdigit(str[counter]) || isalpha(str[counter])) {
+						temp_name += str[counter];
+						++counter;
+					}
+					lexems[size].kind    = VAR;
+					lexems[size].lex.var = new char [temp_name.length() + 1];
+					for (int i = 0; i < temp_name.length(); ++i)
+						lexems[size].lex.var[i] = temp_name[i];
+					lexems[size].lex.var[temp_name.length()] = '\0';
+				}
 		}
-		size++;
+		++size;
+		++counter;
 	}
 }
 

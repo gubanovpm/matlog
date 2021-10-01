@@ -2,11 +2,12 @@
 
 int main () {
 
-	lex_array_t array("(v1 -> v2 + fghjklytdd) &   v ->		(erty | hg)\0");
+	lex_array_t array("~(v1 -> v2 + v3)\0");
 	for (int i = 0; i < array.size_; ++i) {
-		std::cout << array.lexems_[i] ;
+		std::cout << "|" << array.lexems_[i] << "|   " ;
 	}
 	std::cout << std::endl;
+	//std::cout << "i was here!\n" ;
 	syntax_tree_t result(array);
 	return 0;
 }

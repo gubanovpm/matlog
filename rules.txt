@@ -30,3 +30,5 @@ Grammar:
 	           |   "true"
 	           |   "false"
 	           |   "NOT" <term>
+
+// TODO : abort eto ubijstvo!!!

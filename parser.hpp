@@ -33,7 +33,7 @@ struct syntax_tree_t {
 
 syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 	node_t *root = nullptr;
-
+	root = parse_expr(lex_array);
 }
 
 node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
@@ -94,14 +94,54 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 }
 
 node_t *syntax_tree_t::parse_conjunct(lex_array_t &lex_array) {
+	node_t *new_node = new node_t();
+	new_node = parse_term(lex_array);
+	if (lex_array.lexems_[state_++].lex.op != AND) {
+		new_node->right  = nullptr;
+		new_node->left   = nullptr;
+		return new_node;
+	}
+	new_node->data.k    = NODE_OP;
+	new_node->data.u.op = AND;
+	new_node->left      = new_node;
+	++state_; 
+	new_node->right     = parse_conjunct(lex_array);
 
-	return NULL;
+	return new_node;
 }
 
 node_t *syntax_tree_t::parse_disjunct(lex_array_t &lex_array) {
-	return NULL;
+	node_t *new_node = parse_disjunct(lex_array);
+
+	new_node = parse_conjunct(lex_array);
+	if (state_ < lex_array.size_ && lex_array.lexems_[state_++].lex.op != OR) {
+		new_node->right  = nullptr;
+		new_node->left   = nullptr;
+		return new_node;
+	}
+	new_node->data.k    = NODE_OP;
+	new_node->data.u.op = OR;
+	new_node->left      = new_node;
+	++state_; 
+	new_node->right     = parse_disjunct(lex_array);
+
+	return new_node;
 }
 
 node_t *syntax_tree_t::parse_expr(lex_array_t &lex_array) {
-	return NULL;
+	node_t *new_node = parse_disjunct(lex_array);
+
+	new_node = parse_disjunct(lex_array);
+	if (state_ < lex_array.size_ && lex_array.lexems_[state_++].lex.op != IMPL) {
+		new_node->right  = nullptr;
+		new_node->left   = nullptr;
+		return new_node;
+	}
+	new_node->data.k    = NODE_OP;
+	new_node->data.u.op = IMPL;
+	new_node->left      = new_node;
+	++state_; 
+	new_node->right     = parse_expr(lex_array);
+
+	return new_node;
 }

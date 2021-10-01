@@ -3,7 +3,7 @@
 #include <iostream>
 
 enum braces_t     { LBRAC = 0 , RBRAC };
-enum operation_t  { AND   = 11, OR , NOT , XOR , IMPL, EQUAL };
+enum operation_t  { AND   = 11, OR , NOT , IMPL};
 enum lexem_kind_t { OP    = 21, BRAC, VAR , T, F};
 
 struct lexem_t {
@@ -17,7 +17,7 @@ struct lexem_t {
 };
 
 struct lex_array_t {
-	struct lexem_t *lexems_;
+	lexem_t *lexems_;
 	int size_;
 	int capacity_;
 
@@ -36,17 +36,11 @@ std::ostream &operator<< (std::ostream &left, lexem_t &lexem) {
 		case AND:
 			std::cout << "&" ;
 			break;
-		case XOR:
-			std::cout << "+" ;
-			break;
 		case NOT:
 			std::cout << "~" ;
 			break;
 		case IMPL:
 			std::cout << "->" ;
-			break;
-		case EQUAL:
-			std::cout << "=" ;
 			break;
 		default:
 			std::cout << "<unknown operation type>";
@@ -130,11 +124,6 @@ lex_array_t::lex_array_t(const char *str) {
 				lexems_[size_].lex.op = OR;
 				break;
 
-			case '+' :
-				lexems_[size_].kind   = OP;
-				lexems_[size_].lex.op = XOR;
-				break;
-
 			case '-' :
 				if (str[++counter] != '>') {
 					std::cout << "Syntax error - unknow operation \'-\'!\n" ;
@@ -143,11 +132,6 @@ lex_array_t::lex_array_t(const char *str) {
 
 				lexems_[size_].kind   = OP;
 				lexems_[size_].lex.op = IMPL;
-				break;
-
-			case '=' :
-				lexems_[size_].kind   = OP;
-				lexems_[size_].lex.op = EQUAL;
 				break;
 
 			case '1' :

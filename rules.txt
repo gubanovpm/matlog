@@ -3,18 +3,14 @@
 &  = AND
 ~  = NOT
 |  = OR
-+  = XOR
 -> = IMPL
-=  = EQUAL
 1  = TAUT
 0  = LOGICAL FALSE
-
 
 PRIORITY:
 
 1) LBRAC RBRAC
 2) NOT
 3) AND
-4) OR, XOR
+4) OR
 5) IMPL
-6) EQUAL

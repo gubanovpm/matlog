@@ -25,12 +25,12 @@ Grammar:
 	           |   <disjunct>
 
 	<disjunct> ::= <conjunct> "AND" <disjunct>
-               |   "NOT" (<disjunct>)
+	           |   "NOT" (<disjunct>)
 	           |   <conjunct>
 
 	<conjunct> ::= <term> "OR" <conjunct>
 	           |   "NOT" (<conjunct>)
-			   |   <term>
+	           |   <term>
 
 	<term>     ::= (<expr>)
 	           |   "variable_name"

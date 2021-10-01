@@ -25,7 +25,6 @@ struct syntax_tree_t {
 	syntax_tree_t(lex_array_t &lex_array);
 	
 	node_t *parse_expr    (lex_array_t &lex_array);
-	node_t *parse_implicat(lex_array_t &lex_array);
 	node_t *parse_disjunct(lex_array_t &lex_array);
 	node_t *parse_conjunct(lex_array_t &lex_array);
 	node_t *parse_term    (lex_array_t &lex_array);
@@ -36,5 +35,5 @@ syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 }
 
 node_t *syntax_tree_t::parse_expr(lex_array_t &lex_array) {
-	
+
 }

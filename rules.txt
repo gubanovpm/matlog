@@ -18,10 +18,6 @@ PRIORITY:
 Grammar:
 	<expr>     ::= <implicat> "IMPL" <expr>
 	           |   "NOT" (<expr>)
-	           |   <implicat>
-
-	<implicat> ::= <disjunct> "IMPL" <implicat>
-	           |   "NOT" (<implicat>)
 	           |   <disjunct>
 
 	<disjunct> ::= <conjunct> "AND" <disjunct>

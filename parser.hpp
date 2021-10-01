@@ -88,11 +88,13 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node->left       = nullptr;
 			return new_node;
 		default:
-			return nullptr;
+			std::cout << "Syntax error: unknow term type\n" ;
+			abort();
 	}
 }
 
 node_t *syntax_tree_t::parse_conjunct(lex_array_t &lex_array) {
+
 	return NULL;
 }
 

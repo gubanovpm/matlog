@@ -16,8 +16,8 @@ PRIORITY:
 5) IMPL
 
 Grammar:
-	<expr>     ::= "NOT" (<expr>)
-	           |   <implicat> "IMPL" <expr>
+	<expr>     ::= <implicat> "IMPL" <expr>
+	           |   "NOT" (<expr>)
 	           |   <implicat>
 
 	<implicat> ::= <disjunct> "IMPL" <implicat>

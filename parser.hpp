@@ -3,10 +3,27 @@
 #include "lexer.hpp"
 
 /* Grammar:
-	expr = 
+	<expr>     ::= "NOT" (<expr>)
+	           |   <implicat> "IMPL" <implicat>
+	           |   <implicat>
 
-	term = not(expr)| (expr) | variable
+	<implicat> ::= <disjunct> "IMPL" <implicat>
+	           |   "NOT" (<implicat>)
+			   |   <disjunct>
 
+	<disjunct> ::= <conjunct> "AND" <disjunct>
+               |   "NOT" (<disjunct>)
+			   |   <conjunct>
+
+	<conjunct> ::= <term> "OR" <conjunct>
+	           |   "NOT" (<conjunct>)
+			   |   <term>
+
+	<term>     ::= (<expr>)
+	           |   "variable_name"
+			   |   "true"
+			   |   "false"
+			   |   "NOT" <term>
 */
 
 enum node_kind_t  { NODE_OP = 30, NODE_VAL };

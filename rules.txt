@@ -17,15 +17,12 @@ PRIORITY:
 
 Grammar:
 	<expr>     ::= <disjunct> "IMPL" <expr>
-	           |   "NOT" (<expr>)
 	           |   <disjunct>
 
 	<disjunct> ::= <conjunct> "OR" <disjunct>
-	           |   "NOT" (<disjunct>)
 	           |   <conjunct>
 
 	<conjunct> ::= <term> "AND" <conjunct>
-	           |   "NOT" (<conjunct>)
 	           |   <term>
 
 	<term>     ::= (<expr>)

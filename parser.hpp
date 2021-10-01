@@ -2,30 +2,6 @@
 
 #include "lexer.hpp"
 
-/* Grammar:
-	<expr>     ::= "NOT" (<expr>)
-	           |   <implicat> "IMPL" <implicat>
-	           |   <implicat>
-
-	<implicat> ::= <disjunct> "IMPL" <implicat>
-	           |   "NOT" (<implicat>)
-			   |   <disjunct>
-
-	<disjunct> ::= <conjunct> "AND" <disjunct>
-               |   "NOT" (<disjunct>)
-			   |   <conjunct>
-
-	<conjunct> ::= <term> "OR" <conjunct>
-	           |   "NOT" (<conjunct>)
-			   |   <term>
-
-	<term>     ::= (<expr>)
-	           |   "variable_name"
-			   |   "true"
-			   |   "false"
-			   |   "NOT" <term>
-*/
-
 enum node_kind_t  { NODE_OP = 30, NODE_VAL };
 
 struct node_data_t {
@@ -43,13 +19,22 @@ struct node_t {
 };
 
 struct syntax_tree_t {
-	node_t *root;
+	node_t *root_ ;
+	int     state_;
 
 	syntax_tree_t(lex_array_t &lex_array);
+	
+	node_t *parse_expr    (lex_array_t &lex_array);
+	node_t *parse_implicat(lex_array_t &lex_array);
+	node_t *parse_disjunct(lex_array_t &lex_array);
+	node_t *parse_conjunct(lex_array_t &lex_array);
+	node_t *parse_term    (lex_array_t &lex_array);
 };
 
 syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 	node_t *root = nullptr;
+}
 
-
+node_t *syntax_tree_t::parse_expr(lex_array_t &lex_array) {
+	
 }

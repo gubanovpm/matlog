@@ -20,11 +20,11 @@ Grammar:
 	           |   "NOT" (<expr>)
 	           |   <disjunct>
 
-	<disjunct> ::= <conjunct> "AND" <disjunct>
+	<disjunct> ::= <conjunct> "OR" <disjunct>
 	           |   "NOT" (<disjunct>)
 	           |   <conjunct>
 
-	<conjunct> ::= <term> "OR" <conjunct>
+	<conjunct> ::= <term> "AND" <conjunct>
 	           |   "NOT" (<conjunct>)
 	           |   <term>
 

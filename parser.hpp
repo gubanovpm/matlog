@@ -54,14 +54,14 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 				abort();
 			}
 			return new_node;
-			break;
 		
 		case VAR:
 			new_node             = new node_t();
 			new_node->data.k     = NODE_VAR;
 			new_node->data.u.var = lex_array.lexems_[state_++].lex.var;
+			new_node->right      = nullptr;
+			new_node->left       = nullptr;
 			return new_node;
-			break;
 		
 		case NOT:
 			new_node			 =  new node_t();
@@ -70,7 +70,6 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node->left       = parse_term(lex_array);
 			new_node->right      = nullptr;
 			return new_node;
-			break;
 		
 		case T:
 			new_node             = new node_t();
@@ -80,7 +79,6 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node->left       = nullptr;
 			++state_;
 			return new_node;
-			break;
 		
 		case F:
 			new_node             = new node_t();
@@ -89,7 +87,6 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node->right      = nullptr;
 			new_node->left       = nullptr;
 			return new_node;
-			break;
 		default:
 			return nullptr;
 	}

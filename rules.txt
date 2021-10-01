@@ -17,7 +17,7 @@ PRIORITY:
 
 Grammar:
 	<expr>     ::= "NOT" (<expr>)
-	           |   <implicat> "IMPL" <implicat>
+	           |   <implicat> "IMPL" <expr>
 	           |   <implicat>
 
 	<implicat> ::= <disjunct> "IMPL" <implicat>

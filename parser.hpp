@@ -36,16 +36,14 @@ struct syntax_tree_t {
 };
 
 syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
-	node_t *root = nullptr;
 	state_ = 0;
-	root = parse_expr(lex_array);
+	root_ = parse_expr(lex_array);
 }
 
 node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
-	
 
-	printf("%p", root_);
-	print_tree(root_);
+	printf("START parsing term\n");
+	printf("%p <- adress root_ when state_ = %d\n", root_, state_);
 	node_t *new_node;
 	if (state_ >= lex_array.size_)
 		return nullptr;
@@ -67,6 +65,7 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 				abort();
 			}
 			print_node(new_node);
+			printf("EXIT from parse_TERM\n");
 			return new_node;
 		
 		case VAR:
@@ -76,6 +75,7 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node->right      = nullptr;
 			new_node->left       = nullptr;
 			print_node(new_node);
+			printf("EXIT from parse_TERM\n");
 			return new_node;
 		case OP:
 			if (lex_array.lexems_[state_].lex.op == NOT) {
@@ -90,6 +90,7 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 				new_node->right      = nullptr;
 				
 				print_node(new_node);
+			printf("EXIT from parse_TERM\n");
 				return new_node;
 			}
 			return nullptr;
@@ -104,6 +105,7 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			++state_;
 			
 			print_node(new_node);
+			printf("EXIT from parse_TERM\n");
 			return new_node;
 		
 		case F:
@@ -115,6 +117,7 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			++state_;
 			
 			print_node(new_node);
+			printf("EXIT from parse_TERM\n");
 			return new_node;
 		default:
 			std::cout << "Syntax error: unknow term type\n" ;
@@ -123,11 +126,13 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 }
 
 node_t *syntax_tree_t::parse_conjunct(lex_array_t &lex_array) {
+	printf("START parse_conjunct\n");
 	node_t *new_node;
 
 	new_node = parse_term(lex_array);
 	if (state_ >= lex_array.size_ || lex_array.lexems_[state_].lex.op != AND) {
 		print_node(new_node);
+		printf("EXIT FROM PARSE_CONJUNCT\n");
 		return new_node;
 	}
 
@@ -140,15 +145,19 @@ node_t *syntax_tree_t::parse_conjunct(lex_array_t &lex_array) {
 	temp->right     = parse_conjunct(lex_array);
 
 	print_node(temp);
+		printf("EXIT FROM PARSE_CONJUNCT\n");
 	return temp;
 }
 
 node_t *syntax_tree_t::parse_disjunct(lex_array_t &lex_array) {
+	
+	printf("START parsing disjunct\n");
 	node_t *new_node;
 	
 	new_node = parse_conjunct(lex_array);
 	if (state_ >= lex_array.size_ || lex_array.lexems_[state_].lex.op != OR) {
 		print_node(new_node);
+		printf("EXIT FROM PARSE_DISJUNCT\n");
 		return new_node;
 	}
 
@@ -161,15 +170,19 @@ node_t *syntax_tree_t::parse_disjunct(lex_array_t &lex_array) {
 	temp->right     = parse_disjunct(lex_array);
 
 	print_node(temp);
+		printf("EXIT FROM PARSE_DISJUNCT\n");
 	return temp;
 }
 
 node_t *syntax_tree_t::parse_expr(lex_array_t &lex_array) {
-	node_t *new_node = parse_disjunct(lex_array);
+
+	printf("START parsing expr\n");
+	node_t *new_node;
 
 	new_node = parse_disjunct(lex_array);
 	if (state_ >= lex_array.size_ || lex_array.lexems_[state_].lex.op != IMPL) {
 		print_node(new_node);
+		printf("EXIT from parse_expr\n");
 		return new_node;
 	}
 
@@ -182,6 +195,7 @@ node_t *syntax_tree_t::parse_expr(lex_array_t &lex_array) {
 	temp->right     = parse_expr(lex_array);
 
 	print_node(temp);
+		printf("EXIT from parse_expr\n");
 	return temp;
 }
 
@@ -218,7 +232,7 @@ void print_node(node_t *node) {
 			std::cout << "variable " << node->data.u.var << std::endl;
 			break;
 		default:
-			printf("%d => YOU ARE DOLBAEB\n", node->data.k);
+			printf("%d - is unknow node type\n", node->data.k);
 	}
 }
 

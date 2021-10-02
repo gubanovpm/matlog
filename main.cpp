@@ -9,7 +9,6 @@ int main () {
 	std::cout << std::endl;
 	//std::cout << "i was here!\n" ;
 	syntax_tree_t result(array);
-	printf("%p\n", result.root_);
 	result.print_tree(result.root_);
 	return 0;
 }

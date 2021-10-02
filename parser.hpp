@@ -2,7 +2,7 @@
 
 #include "lexer.hpp"
 
-enum node_kind_t  { NODE_OP = 30, NODE_VAL , NODE_VAR};
+enum node_kind_t  { NODE_OP = 41, NODE_VAL , NODE_VAR};
 
 struct node_data_t {
 	enum node_kind_t k;
@@ -20,11 +20,13 @@ struct node_t {
 };
 
 void print_node(node_t *node);
+void print_tree(node_t *root);
 
 struct syntax_tree_t {
 	node_t *root_ ;
 	int     state_;
 
+	void print_tree(node_t *root);
 	syntax_tree_t(lex_array_t &lex_array);
 	
 	node_t *parse_expr    (lex_array_t &lex_array);
@@ -40,10 +42,16 @@ syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 }
 
 node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
+	
+
+	printf("%p", root_);
+	print_tree(root_);
 	node_t *new_node;
+	if (state_ >= lex_array.size_)
+		return nullptr;
 	std::cout << state_ << "\n";
 	std::cout << lex_array.lexems_[state_].kind << std::endl;
-	switch (lex_array.lexems_[state_].lex.op) {
+	switch (lex_array.lexems_[state_].kind) {
 		case BRAC:
 			if (lex_array.lexems_[state_].lex.b == LBRAC)
 				++state_;
@@ -69,20 +77,23 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node->left       = nullptr;
 			print_node(new_node);
 			return new_node;
-		
-		case NOT:
-			std::cout << "i was here!\n" ;
-			new_node			 = new node_t();
-			new_node->data.k     = NODE_OP;
-			new_node->data.u.op  = lex_array.lexems_[state_++].lex.op;
-			
-			print_node(new_node);
+		case OP:
+			if (lex_array.lexems_[state_].lex.op == NOT) {
+			//std::cout << "i was here!\n" ;
+				new_node			 = new node_t();
+				new_node->data.k     = NODE_OP;
+				new_node->data.u.op  = lex_array.lexems_[state_++].lex.op;
+				
+				print_node(new_node);
 
-			new_node->left       = parse_term(lex_array);
-			new_node->right      = nullptr;
-			
-			print_node(new_node);
-			return new_node;
+				new_node->left       = parse_term(lex_array);
+				new_node->right      = nullptr;
+				
+				print_node(new_node);
+				return new_node;
+			}
+			return nullptr;
+			break;
 		
 		case T:
 			new_node             = new node_t();
@@ -101,6 +112,7 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node->data.u.val = 0;
 			new_node->right      = nullptr;
 			new_node->left       = nullptr;
+			++state_;
 			
 			print_node(new_node);
 			return new_node;
@@ -112,68 +124,75 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 
 node_t *syntax_tree_t::parse_conjunct(lex_array_t &lex_array) {
 	node_t *new_node;
-	
+
 	new_node = parse_term(lex_array);
-	if (lex_array.lexems_[state_++].lex.op != AND) {
-		new_node->right  = nullptr;
-		new_node->left   = nullptr;
-		
+	if (state_ >= lex_array.size_ || lex_array.lexems_[state_].lex.op != AND) {
 		print_node(new_node);
 		return new_node;
 	}
-	new_node->data.k    = NODE_OP;
-	new_node->data.u.op = AND;
-	new_node->left      = new_node;
-	++state_; 
-	new_node->right     = parse_conjunct(lex_array);
 
-	print_node(new_node);
-	return new_node;
+	node_t *temp = new node_t ();
+	temp->data.k    = NODE_OP;
+	temp->data.u.op = AND;
+	temp->left      = new_node;
+
+	++state_;
+	temp->right     = parse_conjunct(lex_array);
+
+	print_node(temp);
+	return temp;
 }
 
 node_t *syntax_tree_t::parse_disjunct(lex_array_t &lex_array) {
 	node_t *new_node;
 	
 	new_node = parse_conjunct(lex_array);
-	if (state_ < lex_array.size_ && lex_array.lexems_[state_++].lex.op != OR) {
-		new_node->right  = nullptr;
-		new_node->left   = nullptr;
+	if (state_ >= lex_array.size_ || lex_array.lexems_[state_].lex.op != OR) {
 		print_node(new_node);
 		return new_node;
 	}
-	new_node->data.k    = NODE_OP;
-	new_node->data.u.op = OR;
-	new_node->left      = new_node;
-	++state_; 
-	new_node->right     = parse_disjunct(lex_array);
 
-	print_node(new_node);
-	return new_node;
+	node_t *temp = new node_t();
+	temp->data.k    = NODE_OP;
+	temp->data.u.op = OR;
+	temp->left      = new_node;
+	
+	++state_; 
+	temp->right     = parse_disjunct(lex_array);
+
+	print_node(temp);
+	return temp;
 }
 
 node_t *syntax_tree_t::parse_expr(lex_array_t &lex_array) {
 	node_t *new_node = parse_disjunct(lex_array);
 
 	new_node = parse_disjunct(lex_array);
-	if (state_ < lex_array.size_ && lex_array.lexems_[state_++].lex.op != IMPL) {
-		new_node->right  = nullptr;
-		new_node->left   = nullptr;
-		
+	if (state_ >= lex_array.size_ || lex_array.lexems_[state_].lex.op != IMPL) {
 		print_node(new_node);
 		return new_node;
 	}
-	new_node->data.k    = NODE_OP;
-	new_node->data.u.op = IMPL;
-	new_node->left      = new_node;
-	++state_; 
-	new_node->right     = parse_expr(lex_array);
 
-	print_node(new_node);
-	return new_node;
+	node_t *temp = new node_t();	
+	temp->data.k    = NODE_OP;
+	temp->data.u.op = IMPL;
+	temp->left      = new_node;
+
+	++state_; 
+	temp->right     = parse_expr(lex_array);
+
+	print_node(temp);
+	return temp;
 }
 
 void print_node(node_t *node) {
 	std::cout << "this node is : ";
+	if (node == nullptr) {
+		printf("nullptr node\n");
+		return ;
+	}
+
+		
 	switch (node->data.k) {
 		case NODE_OP:
 			std::cout << "operation " ;
@@ -198,5 +217,15 @@ void print_node(node_t *node) {
 		case NODE_VAR:
 			std::cout << "variable " << node->data.u.var << std::endl;
 			break;
+		default:
+			printf("%d => YOU ARE DOLBAEB\n", node->data.k);
+	}
+}
+
+void syntax_tree_t::print_tree(node_t *root) {
+	if (root != nullptr) {	
+		print_tree(root->left);
+		print_tree(root->right);
+		print_node(root);
 	}
 }

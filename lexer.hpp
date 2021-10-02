@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-enum braces_t     { LBRAC = 0 , RBRAC };
-enum operation_t  { AND   = 11, OR , NOT , IMPL};
-enum lexem_kind_t { OP    = 21, BRAC, VAR , T, F};
+enum braces_t     { LBRAC = 11 , RBRAC };
+enum operation_t  { AND   = 21, OR , NOT , IMPL};
+enum lexem_kind_t { OP    = 31, BRAC, VAR , T, F};
 
 struct lexem_t {
 	enum lexem_kind_t kind;

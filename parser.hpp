@@ -230,9 +230,8 @@ void syntax_tree_t::print_node(node_t *root) {
 	if (root == nullptr) return;
 
 	if (root->data.k == NODE_OP && root->data.u.op == NOT) {
-		std::cout << "~(" ;
+		std::cout << "~" ;
 		print_node(root->left);
-		std::cout <<  ")" ;
 		return;
 	}
 	else if (root->isbracket) {

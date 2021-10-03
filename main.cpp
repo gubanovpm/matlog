@@ -1,8 +1,8 @@
 #include "parser.hpp"
 
-// TODO: abort - concentrate evil
-// TODO: incapsulate brooo - you in c++
-// TODO: ??? 
+// TODO: just killing - before abort() delete all alocate memory
+// TODO: incapsulate brooo - add private and public methods plz
+// TODO: kings don't rule forever, my son - add inheritance in parser and lexer
 
 int main () {
 

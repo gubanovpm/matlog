@@ -2,7 +2,7 @@
 
 int main () {
 
-	lex_array_t array("~(~(v1 & v2)->v3|v4)\0");
+	lex_array_t array("~v1\0");
 	
 	std::cout << "lexer result: " ;
 	for (int i = 0; i < array.size_; ++i) {

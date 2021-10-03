@@ -62,7 +62,7 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			}
 			else {
 				std::cout << "Syntax error: unexpected bracket type - expected \'(\'\n" ;
-				destroy_syntax_tree_t(root_);
+				//destroy_syntax_tree_t(root_);
 				delete &lex_array;
 				abort();
 			}

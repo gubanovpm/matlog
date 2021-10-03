@@ -24,6 +24,7 @@ void print_n(node_t *node);
 struct syntax_tree_t {
 	node_t *root_ ;
 	int     state_;
+	int     count_brackets_;
 
 	void show();
 	void print_node(node_t *root);					//private
@@ -37,7 +38,13 @@ struct syntax_tree_t {
 
 syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 	state_ = 0;
+	count_brackets_ = 0;
 	root_ = parse_expr(lex_array);
+	//printf("array size = %d when counted state = %d and counted brackets is = %d\n", lex_array.size_, state_, count_brackets_);
+	if (state_ != lex_array.size_) {
+		printf("strange input constructions!\n");
+		abort();
+	}
 }
 
 node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
@@ -51,15 +58,21 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 	//std::cout << lex_array.lexems_[state_].kind << std::endl;
 	switch (lex_array.lexems_[state_].kind) {
 		case BRAC:
-			if (lex_array.lexems_[state_].lex.b == LBRAC)
+			if (lex_array.lexems_[state_].lex.b == LBRAC) {
 				++state_;
+				++count_brackets_;
+			}
 			else {
 				std::cout << "Syntax error: unexpected bracket type - expected \'(\'\n" ;
 				abort();
 			}
+
 			new_node = parse_expr(lex_array);
-			if (lex_array.lexems_[state_].lex.b == RBRAC)
+			
+			if (lex_array.lexems_[state_].lex.b == RBRAC) {
 				++state_;
+				++count_brackets_;
+			}
 			else {
 				std::cout << "Syntax error: unexpected bracket type - expected \')\'\n" ;
 				abort();

@@ -93,6 +93,8 @@ lex_array_t::lex_array_t(const char *str) {
 	int counter = 0;
 	while (str[counter] != '\0') {
 
+		//printf ("counter = %d\n", counter);
+
 		if (size_ >= capacity_)
 			resize(2 * capacity_);
 
@@ -100,6 +102,11 @@ lex_array_t::lex_array_t(const char *str) {
 		//			std::cout << "Variable names can not starting with a number\n" ;
 		//			abort();
 		//		}
+		//if (isspace(str[counter])) {
+		//	++counter;
+		//	printf ("counter = %d\n", counter);
+		//	continue;
+		//}
 
 		switch (str[counter]) {
 			case '(':
@@ -128,13 +135,17 @@ lex_array_t::lex_array_t(const char *str) {
 				break;
 
 			case '-' :
-				if (str[++counter] != '>') {
+				if (counter < capacity_  && str[++counter] != '>') {
 					std::cout << "Syntax error - unknow operation \'-\'!\n" ;
 					abort();
 				}
 
+				//printf("POPAL\n");
 				lexems_[size_].kind   = OP;
 				lexems_[size_].lex.op = IMPL;
+				counter += 2;
+				++size_;
+				continue;
 				break;
 
 			case '1' :
@@ -162,9 +173,9 @@ lex_array_t::lex_array_t(const char *str) {
 					lexems_[size_].lex.var[temp_name.length()] = '\0';
 					++size_;
 				}
+				
 				else if (isspace (str[counter]) == 0) {
-
-					printf("pshlnh!\n");
+					printf ("a kak ? str[%d] = %c\n", counter, str[counter]);
 					abort();
 				}
 				++counter;

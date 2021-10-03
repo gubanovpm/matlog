@@ -1,10 +1,14 @@
 #include "parser.hpp"
 
+// TODO: abort - concentrate evil
+// TODO: incapsulate brooo - you in c++
+// TODO: ??? 
+
 int main () {
 
 
 	char str[256] = {};
-	scanf("%100s", str);
+	fgets(str, 100, stdin);
 
 	std::cout << "TEST : " << str << std::endl;
 	lex_array_t array((const char *)(str));

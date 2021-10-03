@@ -44,6 +44,7 @@ std::ostream &operator<< (std::ostream &left, lexem_t &lexem) {
 			break;
 		default:
 			std::cout << "<unknown operation type>";
+			abort();
 			break;
 		}
 		break;
@@ -58,6 +59,7 @@ std::ostream &operator<< (std::ostream &left, lexem_t &lexem) {
 				break;
 			default:
 				std::cout << "<unknown bracket type>";
+				abort();
 				break;
 		}
 		break;
@@ -76,6 +78,7 @@ std::ostream &operator<< (std::ostream &left, lexem_t &lexem) {
 	
 	default:
 		std::cout << "<unknown lexem type>" ;
+		abort();
 		break;
 	}
 	return left;
@@ -93,10 +96,10 @@ lex_array_t::lex_array_t(const char *str) {
 		if (size_ >= capacity_)
 			resize(2 * capacity_);
 
-		if (isdigit(str[counter])) {
-					std::cout << "Variable names can not starting with a number\n" ;
-					abort();
-				}
+		//if (isdigit(str[counter])) {
+		//			std::cout << "Variable names can not starting with a number\n" ;
+		//			abort();
+		//		}
 
 		switch (str[counter]) {
 			case '(':
@@ -158,6 +161,11 @@ lex_array_t::lex_array_t(const char *str) {
 						lexems_[size_].lex.var[i] = temp_name[i];
 					lexems_[size_].lex.var[temp_name.length()] = '\0';
 					++size_;
+				}
+				else if (isspace (str[counter]) == 0) {
+
+					printf("pshlnh!\n");
+					abort();
 				}
 				++counter;
 				continue;

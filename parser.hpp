@@ -93,8 +93,8 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 				//printf("EXIT from parse_TERM\n");
 				return new_node;
 			}
-			return nullptr;
-			break;
+			printf("Operation does not exist!\n");
+			abort();
 		
 		case T:
 			new_node             = new node_t();

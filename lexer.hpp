@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-enum braces_t     { LBRAC = 11 , RBRAC };
+enum bracket_t     { LBRAC = 11 , RBRAC };
 enum operation_t  { AND   = 21, OR , NOT , IMPL};
 enum lexem_kind_t { OP    = 31, BRAC, VAR , T, F};
 
@@ -10,7 +10,7 @@ struct lexem_t {
 	enum lexem_kind_t kind;
 	union {
 		enum operation_t op;
-		enum braces_t    b;
+		enum bracket_t    b;
 		char *var;
 		int  value;
 	} lex;

@@ -44,7 +44,8 @@ syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 
 	if (state_ != lex_array.size_) {
 		printf("strange input constructions!\n");
-		
+		destroy_syntax_tree_t(root_);
+		delete &lex_array;
 		abort();
 	}
 }
@@ -61,6 +62,8 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			}
 			else {
 				std::cout << "Syntax error: unexpected bracket type - expected \'(\'\n" ;
+				destroy_syntax_tree_t(root_);
+				delete &lex_array;
 				abort();
 			}
 
@@ -73,6 +76,8 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			}
 			else {
 				std::cout << "Syntax error: unexpected bracket type - expected \')\'\n" ;
+				destroy_syntax_tree_t(root_);
+				delete &lex_array;
 				abort();
 			}
 			return new_node;
@@ -97,6 +102,8 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 				return new_node;
 			}
 			printf("Operation does not exist!\n");
+			destroy_syntax_tree_t(root_);
+			delete &lex_array;
 			abort();
 		
 		case T:
@@ -120,6 +127,8 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			return new_node;
 		default:
 			std::cout << "Syntax error: unknow term type\n" ;
+			destroy_syntax_tree_t(root_);
+			delete &lex_array;
 			abort();
 	}
 }

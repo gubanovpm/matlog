@@ -23,5 +23,6 @@ int main () {
 	
 	std::cout << "parser result: " ;
 	result.show();
+	result.destroy_syntax_tree_t(result.root_);
 	return 0;
 }

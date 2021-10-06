@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-enum bracket_t     { LBRAC = 11 , RBRAC };
-enum operation_t  { AND   = 21, OR , NOT , IMPL};
-enum lexem_kind_t { OP    = 31, BRAC, VAR , T, F};
+enum bracket_t    { LBRAC = 11, RBRAC};
+enum operation_t  { AND   = 21, OR   , NOT , IMPL, EQUAL};
+enum lexem_kind_t { OP    = 31, BRAC , VAR , T   , F    };
 
 struct lexem_t {
 	enum lexem_kind_t kind;
@@ -41,6 +41,9 @@ std::ostream &operator<< (std::ostream &left, lexem_t &lexem) {
 			break;
 		case IMPL:
 			std::cout << "->" ;
+			break;
+		case EQUAL:
+			std::cout << "=" ;
 			break;
 		default:
 			std::cout << "<unknown operation type>";
@@ -93,20 +96,8 @@ lex_array_t::lex_array_t(const char *str) {
 	int counter = 0;
 	while (str[counter] != '\0') {
 
-		//printf ("counter = %d\n", counter);
-
 		if (size_ >= capacity_)
 			resize(2 * capacity_);
-
-		//if (isdigit(str[counter])) {
-		//			std::cout << "Variable names can not starting with a number\n" ;
-		//			abort();
-		//		}
-		//if (isspace(str[counter])) {
-		//	++counter;
-		//	printf ("counter = %d\n", counter);
-		//	continue;
-		//}
 
 		switch (str[counter]) {
 			case '(':
@@ -140,7 +131,6 @@ lex_array_t::lex_array_t(const char *str) {
 					abort();
 				}
 
-				//printf("POPAL\n");
 				lexems_[size_].kind   = OP;
 				lexems_[size_].lex.op = IMPL;
 				counter += 2;
@@ -156,6 +146,11 @@ lex_array_t::lex_array_t(const char *str) {
 			case '0' :
 				lexems_[size_].kind      = F;
 				lexems_[size_].lex.value = 0;
+				break;
+
+			case '=' :
+				lexems_[size_].kind      = OP;
+				lexems_[size_].lex.op    = EQUAL;
 				break;
 
 			default:

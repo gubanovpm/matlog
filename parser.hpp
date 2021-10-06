@@ -1,5 +1,8 @@
 #pragma once
 
+#include <iostream>
+#include <unordered_map>
+
 #include "lexer.hpp"
 
 enum node_kind_t  { NODE_OP = 41, NODE_VAL , NODE_VAR};
@@ -11,7 +14,7 @@ struct node_data_t {
 		int  val;
 		char *var;
 	} u;
-	
+	char value = -1;
 };
 
 struct node_t {
@@ -21,11 +24,14 @@ struct node_t {
 };
 
 void print_n(node_t *node);
+node_t *copy_node(node_t *copied_node);
 
 struct syntax_tree_t {
 	node_t *root_ ;
 	int     state_;
+	std::unordered_map < std::string, node_t * > variables_;
 
+	syntax_tree_t();
 	syntax_tree_t(lex_array_t &lex_array);
 	void destroy_syntax_tree_t(node_t *node);
 	
@@ -34,9 +40,16 @@ struct syntax_tree_t {
 	node_t *parse_conjunct(lex_array_t &lex_array);
 	node_t *parse_term    (lex_array_t &lex_array);
 
+	node_t *copy_tree     (node_t *root);
+
 	void show();
 	void print_node(node_t *root);					//private
 };
+
+syntax_tree_t::syntax_tree_t() {
+	state_ = 0;
+	root_  = nullptr;
+}
 
 syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 	state_ = 0;
@@ -63,7 +76,7 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			else {
 				std::cout << "Syntax error: unexpected bracket type - expected \'(\'\n" ;
 				//destroy_syntax_tree_t(root_);
-				delete &lex_array;
+				//delete &lex_array;
 				abort();
 			}
 
@@ -88,7 +101,9 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node->data.u.var = lex_array.lexems_[state_++].lex.var;
 			new_node->right      = nullptr;
 			new_node->left       = nullptr;
-
+			if (variables_.find(std::string(lex_array.lexems_[state_++].lex.var)) == variables_.end()) {
+				variables_[std::string(lex_array.lexems_[state_++].lex.var)] = new_node;
+			}
 			return new_node;
 		case OP:
 			if (lex_array.lexems_[state_].lex.op == NOT) {
@@ -110,6 +125,7 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node             = new node_t();
 			new_node->data.k     = NODE_VAL;
 			new_node->data.u.val = 1;
+			new_node->data.value = 1;
 			new_node->right      = nullptr;
 			new_node->left       = nullptr;
 			++state_;
@@ -120,6 +136,7 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node             = new node_t();
 			new_node->data.k     = NODE_VAL;
 			new_node->data.u.val = 0;
+			new_node->data.value = 0;
 			new_node->right      = nullptr;
 			new_node->left       = nullptr;
 			++state_;
@@ -245,4 +262,22 @@ void syntax_tree_t::print_node(node_t *root) {
 		print_n(root);
 		print_node(root->right);
 	}
+}
+
+node_t *copy_node(node_t *copied_node) {
+	if (copied_node == nullptr)
+		return nullptr;
+	node_t new_node = new node_t() ;
+	new_node->right = copy_node(copied_node->right);
+	new_node->left  = copy_node(copied_node->left );
+
+	new_node->data.k     = copied_node->data.k;
+	new_node->data.u     = copied_node->data.u;
+	new_node->data.value = copied_node->data.value;
+
+	return new_node;
+}
+
+node_t *node_t::copy_tree_root (node_t *root) {
+	return copy_node(root);
 }

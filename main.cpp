@@ -1,4 +1,8 @@
+#include <iostream>
+
+#include "lexer.hpp"
 #include "parser.hpp"
+#include "eval.hpp"
 
 // TODO: just killing - before abort() delete all alocate memory
 // TODO: incapsulate brooo - add private and public methods plz
@@ -8,7 +12,7 @@ int main () {
 
 
 	char str[256] = {};
-	fgets(str, 100, stdin);
+	fgets(str, 255, stdin);
 
 	std::cout << "TEST : " << str << std::endl;
 	lex_array_t array((const char *)(str));
@@ -18,7 +22,6 @@ int main () {
 		std::cout << "<" << array.lexems_[i] << ">\t" ;
 	}
 	std::cout << std::endl;
-	//std::cout << "i was here!\n" ;
 	syntax_tree_t result(array);
 	
 	std::cout << "parser result: " ;

@@ -28,7 +28,6 @@ node_t *copy_node(node_t *copied_node, std::unordered_map < std::string, std::li
 struct syntax_tree_t {
 	node_t *root_ ;
 	int     state_;
-	//std::unordered_map < std::string, node_t * > variables_;
 
 	syntax_tree_t();
 	syntax_tree_t(lex_array_t &lex_array);

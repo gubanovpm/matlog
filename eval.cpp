@@ -167,9 +167,7 @@ node_t *eval_t::parse_eval (node_t *current) {
 	}
 	new_node->data.value = new_node->data.u.val ; 
 	new_node->isbracket  = true;
-	//form_tree_->destroy_syntax_tree_t(current);
 	current = new_node;
-	//print_n(current);
 	return new_node;
 }
 

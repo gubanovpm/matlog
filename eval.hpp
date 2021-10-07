@@ -21,11 +21,18 @@ eval_t::eval_t(syntax_tree_t &copied_tree, std::string arg) {
 	form_tree_->root_  = copied_tree.copy_tree_root(copied_tree.root_, pointer_table_);
 
 	lex_array_t lexems (arg.data());
+
+	//for (int i = 0; i < lexems.size_; ++i) {
+	//	std::cout << "<" << lexems.lexems_[i] << ">\t" ;
+	//}
+	//std::cout << std::endl;
+
 	int state = 0;
 	while (state < lexems.size_ - 2) {
 		switch (lexems.lexems_[state].kind) {
 			case VAR:
-				if (lexems.lexems_[++state].kind == OP && lexems.lexems_[++state].lex.op == EQUAL)
+				++state;
+				if (lexems.lexems_[state].kind == OP && lexems.lexems_[state].lex.op == EQUAL)
 					++state;
 				else {
 					std::cout << "eval - unexpected lexem" << 
@@ -45,8 +52,10 @@ eval_t::eval_t(syntax_tree_t &copied_tree, std::string arg) {
 							 ": expected true or false value"<< std::endl;
 					abort();
 				}
+				++state;
 				break;
 			default:
+				std::cout << lexems.lexems_[state] << "\t" ;
 				std::cout << "eval lexer error - unexpected lexem" <<
 							 ": expected VariableName"<< std::endl;
 				abort();

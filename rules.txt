@@ -30,3 +30,5 @@ Grammar:
 	           |   "true"
 	           |   "false"
 	           |   "NOT" <term>
+
+How to encert string to eval(example): var1=1 var2=0

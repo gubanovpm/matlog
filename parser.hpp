@@ -25,7 +25,7 @@ struct node_t {
 };
 
 void print_n(node_t *node);
-node_t *copy_node(node_t *copied_node, std::unordered_map < std::string, std::list < node_t * > > pointer_table);
+node_t *copy_node(node_t *copied_node, std::unordered_map < std::string, std::list < node_t * > > &pointer_table);
 
 struct syntax_tree_t {
 	node_t *root_ ;
@@ -41,7 +41,7 @@ struct syntax_tree_t {
 	node_t *parse_conjunct (lex_array_t &lex_array);
 	node_t *parse_term     (lex_array_t &lex_array);
 
-	node_t *copy_tree_root (node_t *root, std::unordered_map < std::string, std::list < node_t * > > pointer_table);
+	node_t *copy_tree_root (node_t *root, std::unordered_map < std::string, std::list < node_t * > > &pointer_table);
 
 	void show();
 	void print_node(node_t *root);					//private
@@ -265,7 +265,7 @@ void syntax_tree_t::print_node(node_t *root) {
 	}
 }
 
-node_t *copy_node(node_t *copied_node, std::unordered_map < std::string, std::list < node_t * > > pointer_table) {
+node_t *copy_node(node_t *copied_node, std::unordered_map < std::string, std::list < node_t * > > &pointer_table) {
 	if (copied_node == nullptr)
 		return nullptr;
 	node_t *new_node = new node_t() ;
@@ -283,6 +283,6 @@ node_t *copy_node(node_t *copied_node, std::unordered_map < std::string, std::li
 	return new_node;
 }
 
-node_t *syntax_tree_t::copy_tree_root (node_t *root, std::unordered_map < std::string, std::list < node_t * > > pointer_table) {
+node_t *syntax_tree_t::copy_tree_root (node_t *root, std::unordered_map < std::string, std::list < node_t * > > &pointer_table) {
 	return copy_node(root, pointer_table);
 }

@@ -73,17 +73,21 @@ node_t *eval_t::parse_eval (node_t *current) {
 	
 	if (current->data.u.op == NOT) {
 		node_t *temp = parse_eval(current->left);
-		if (temp->data.k != NODE_VAL) return current;
-
+		if (temp->data.k == NODE_OP && temp->data.u.op == NOT) {
+			return temp->left;
+		}
+		if (temp->data.k != NODE_VAL) {
+			current->left = temp;
+			return current;
+		}
 		node_t *new_node = new node_t ();
 		new_node->left   = nullptr;
 		new_node->right  = nullptr;
 		new_node->data.k = NODE_VAL;
 		new_node->data.u.val = 1 - temp->data.u.val;
 		new_node->data.value = new_node->data.u.val ;
+		new_node->isbracket  = true;
 		
-		//form_tree_->destroy_syntax_tree_t(current->left );
-
 		return new_node;
 	}
 
@@ -98,18 +102,25 @@ node_t *eval_t::parse_eval (node_t *current) {
 			new_node->data.k = NODE_VAL;
 			new_node->data.u.val = 0;
 			new_node->data.value = 0;
+			new_node->isbracket  = true;
 
 			return new_node;
 		}
 
+		if (current->data.u.op == AND && (temp1->data.value == 1 || temp2->data.value == 1)) {
+			if (temp1->data.value == 1) return temp2;
+				else return temp1;
+		}
+
 		if ((current->data.u.op == OR   && (temp1->data.value == 1 || temp2->data.value == 1)) ||
-			(current->data.u.op == IMPL && temp1->data.value == 0)) {
+			(current->data.u.op == IMPL && (temp1->data.value == 0 || temp2->data.value == 1))) {
 				node_t *new_node = new node_t ();
 				new_node->left   = nullptr;
 				new_node->right  = nullptr;
 				new_node->data.k = NODE_VAL;
 				new_node->data.u.val = 1;
 				new_node->data.value = 1;
+				new_node->isbracket  = true;
 
 				return new_node;
 		}
@@ -138,6 +149,7 @@ node_t *eval_t::parse_eval (node_t *current) {
 
 		current->left  = temp1;
 		current->right = temp2;
+		current->isbracket  = true;
 		return current;
 	}
 
@@ -156,7 +168,6 @@ node_t *eval_t::parse_eval (node_t *current) {
 			break;
 
 		case IMPL:
-			std::cout << "impl?\n" ;
 			if (temp1->data.u.val && !temp2->data.u.val) new_node->data.u.val = 0;
 				else new_node->data.u.val = 1;
 			break;	
@@ -165,6 +176,7 @@ node_t *eval_t::parse_eval (node_t *current) {
 			abort();
 	}
 	new_node->data.value = new_node->data.u.val ; 
+	new_node->isbracket  = true;
 	//form_tree_->destroy_syntax_tree_t(current);
 	current = new_node;
 	//print_n(current);

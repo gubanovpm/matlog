@@ -2,3 +2,8 @@ test
 .vscode
 test.txt
 
+/CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+sat_solver
+Makefile

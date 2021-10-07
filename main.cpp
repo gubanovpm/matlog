@@ -28,7 +28,7 @@ int main () {
 	result.show();
 
 	std::cout << "eval   result: " ;
-	eval_t whoami(result, "q=0");
+	eval_t whoami(result, "q=0    w33 = 0 ");
 
 	return 0;
 }

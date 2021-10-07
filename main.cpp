@@ -17,9 +17,9 @@ int main () {
 	std::cout << "TEST : " << str << std::endl;
 	lex_array_t array((const char *)(str));
 	
-	std::cout << "lexer result: " ;
+	std::cout << "lexer  result: " ;
 	for (int i = 0; i < array.size_; ++i) {
-		std::cout << "<" << array.lexems_[i] << ">\t" ;
+		std::cout << "< " << array.lexems_[i] << " >   " ;
 	}
 	std::cout << std::endl;
 	syntax_tree_t result(array);
@@ -27,9 +27,9 @@ int main () {
 	std::cout << "parser result: " ;
 	result.show();
 
-	std::cout << "eval result: " ;
+	std::cout << "eval   result: " ;
 	eval_t whoami(result, "var1=1 var2=0");
 
-	result.destroy_syntax_tree_t(result.root_);
+	//result.destroy_syntax_tree_t(result.root_);
 	return 0;
 }

@@ -11,7 +11,7 @@ struct eval_t {
 	syntax_tree_t *form_tree_;
 
 	eval_t (syntax_tree_t &copied_tree, std::string arg);
-	void parse_eval(node_t *current);
+	node_t *parse_eval(node_t *current);
 	~eval_t();
 };
 
@@ -22,10 +22,12 @@ eval_t::eval_t(syntax_tree_t &copied_tree, std::string arg) {
 
 	lex_array_t lexems (arg.data());
 
-	//for (int i = 0; i < lexems.size_; ++i) {
-	//	std::cout << "<" << lexems.lexems_[i] << ">\t" ;
-	//}
-	//std::cout << std::endl;
+	std::cout << "lexems: " ;
+	for (int i = 0; i < lexems.size_ ; ++i) {
+		std::cout << "< " << lexems.lexems_[i] << " >   " ;
+	}
+
+	std::cout << " | after all: " ;
 
 	int state = 0;
 	while (state < lexems.size_ - 2) {
@@ -61,12 +63,114 @@ eval_t::eval_t(syntax_tree_t &copied_tree, std::string arg) {
 				abort();
 		}
 	}
+	form_tree_->root_ = parse_eval (form_tree_->root_) ;
 	form_tree_->show();
 }
 
-void eval_t::parse_eval (node_t *current) {
+node_t *eval_t::parse_eval (node_t *current) {
+	if (current         == nullptr) return nullptr;
+	if (current->data.k != NODE_OP) return current;
 	
+	if (current->data.u.op == NOT) {
+		node_t *temp = parse_eval(current->left);
+		if (temp->data.k != NODE_VAL) return current;
+
+		node_t *new_node = new node_t ();
+		new_node->left   = nullptr;
+		new_node->right  = nullptr;
+		new_node->data.k = NODE_VAL;
+		new_node->data.u.val = 1 - temp->data.u.val;
+		new_node->data.value = new_node->data.u.val ;
+		
+		//form_tree_->destroy_syntax_tree_t(current->left );
+
+		return new_node;
+	}
+
+	node_t *temp1 = parse_eval(current->left), *temp2 =  parse_eval(current->right) ;
+
+	if (temp1->data.k != NODE_VAL || temp2->data.k != NODE_VAL) {
+
+		if (current->data.u.op == AND && (temp1->data.value == 0 || temp2->data.value == 0)) {
+			node_t *new_node = new node_t ();
+			new_node->left   = nullptr;
+			new_node->right  = nullptr;
+			new_node->data.k = NODE_VAL;
+			new_node->data.u.val = 0;
+			new_node->data.value = 0;
+
+			return new_node;
+		}
+
+		if ((current->data.u.op == OR   && (temp1->data.value == 1 || temp2->data.value == 1)) ||
+			(current->data.u.op == IMPL && temp1->data.value == 0)) {
+				node_t *new_node = new node_t ();
+				new_node->left   = nullptr;
+				new_node->right  = nullptr;
+				new_node->data.k = NODE_VAL;
+				new_node->data.u.val = 1;
+				new_node->data.value = 1;
+
+				return new_node;
+		}
+
+		if (current->data.u.op == OR && (temp1->data.value == 0 || temp2->data.value == 0)) {
+			if (temp1->data.value == 0)
+				return temp2;
+			else
+				return temp1;
+		}
+		
+		if (current->data.u.op == IMPL && temp1->data.value == 1) {
+			return temp2;
+		}
+
+		if (current->data.u.op == IMPL && temp2->data.value == 0) {
+			node_t *new_node    = new node_t();
+			new_node->left      = temp1;
+			new_node->right     = nullptr;
+			new_node->data.k    = NODE_OP;
+			new_node->data.u.op = NOT;
+			temp1->isbracket    = true;
+
+			return new_node;
+		}
+
+		current->left  = temp1;
+		current->right = temp2;
+		return current;
+	}
+
+	node_t *new_node = new node_t ();
+	new_node->left   = nullptr;
+	new_node->right  = nullptr;
+	new_node->data.k = NODE_VAL;
+
+	switch (current->data.u.op) {
+		case AND:	
+			new_node->data.u.val = ((temp1->data.u.val) & (temp2->data.u.val));
+			break;
+
+		case OR:
+			new_node->data.u.val = (temp1->data.u.val) | (temp2->data.u.val);
+			break;
+
+		case IMPL:
+			std::cout << "impl?\n" ;
+			if (temp1->data.u.val && !temp2->data.u.val) new_node->data.u.val = 0;
+				else new_node->data.u.val = 1;
+			break;	
+		default:
+			std::cout << "unknown operation" << std::endl;
+			abort();
+	}
+	new_node->data.value = new_node->data.u.val ; 
+	//form_tree_->destroy_syntax_tree_t(current);
+	current = new_node;
+	//print_n(current);
+	return new_node;
 }
 
 eval_t::~eval_t() {
+	form_tree_->destroy_syntax_tree_t(form_tree_->root_);
 }

@@ -242,6 +242,7 @@ void syntax_tree_t::destroy_syntax_tree_t(node_t *node) {
 	destroy_syntax_tree_t(node->right);
 
 	delete node;
+	return;
 }
 
 void syntax_tree_t::print_node(node_t *root) {

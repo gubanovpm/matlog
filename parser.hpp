@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <list>
 #include <unordered_map>
 
 #include "lexer.hpp"
@@ -24,23 +25,23 @@ struct node_t {
 };
 
 void print_n(node_t *node);
-node_t *copy_node(node_t *copied_node);
+node_t *copy_node(node_t *copied_node, std::unordered_map < std::string, std::list < node_t * > > pointer_table);
 
 struct syntax_tree_t {
 	node_t *root_ ;
 	int     state_;
-	std::unordered_map < std::string, node_t * > variables_;
+	//std::unordered_map < std::string, node_t * > variables_;
 
 	syntax_tree_t();
 	syntax_tree_t(lex_array_t &lex_array);
 	void destroy_syntax_tree_t(node_t *node);
 	
-	node_t *parse_expr    (lex_array_t &lex_array);
-	node_t *parse_disjunct(lex_array_t &lex_array);
-	node_t *parse_conjunct(lex_array_t &lex_array);
-	node_t *parse_term    (lex_array_t &lex_array);
+	node_t *parse_expr     (lex_array_t &lex_array);
+	node_t *parse_disjunct (lex_array_t &lex_array);
+	node_t *parse_conjunct (lex_array_t &lex_array);
+	node_t *parse_term     (lex_array_t &lex_array);
 
-	node_t *copy_tree     (node_t *root);
+	node_t *copy_tree_root (node_t *root, std::unordered_map < std::string, std::list < node_t * > > pointer_table);
 
 	void show();
 	void print_node(node_t *root);					//private
@@ -89,8 +90,8 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			}
 			else {
 				std::cout << "Syntax error: unexpected bracket type - expected \')\'\n" ;
-				destroy_syntax_tree_t(root_);
-				delete &lex_array;
+				//destroy_syntax_tree_t(root_);
+				//delete &lex_array;
 				abort();
 			}
 			return new_node;
@@ -101,9 +102,9 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node->data.u.var = lex_array.lexems_[state_++].lex.var;
 			new_node->right      = nullptr;
 			new_node->left       = nullptr;
-			if (variables_.find(std::string(lex_array.lexems_[state_++].lex.var)) == variables_.end()) {
-				variables_[std::string(lex_array.lexems_[state_++].lex.var)] = new_node;
-			}
+			//if (variables_.find(std::string(lex_array.lexems_[state_++].lex.var)) == variables_.end()) {
+			//	variables_[std::string(lex_array.lexems_[state_++].lex.var)] = new_node;
+			//}
 			return new_node;
 		case OP:
 			if (lex_array.lexems_[state_].lex.op == NOT) {
@@ -264,20 +265,24 @@ void syntax_tree_t::print_node(node_t *root) {
 	}
 }
 
-node_t *copy_node(node_t *copied_node) {
+node_t *copy_node(node_t *copied_node, std::unordered_map < std::string, std::list < node_t * > > pointer_table) {
 	if (copied_node == nullptr)
 		return nullptr;
-	node_t new_node = new node_t() ;
-	new_node->right = copy_node(copied_node->right);
-	new_node->left  = copy_node(copied_node->left );
+	node_t *new_node = new node_t() ;
+	new_node->right = copy_node(copied_node->right, pointer_table);
+	new_node->left  = copy_node(copied_node->left , pointer_table);
 
 	new_node->data.k     = copied_node->data.k;
 	new_node->data.u     = copied_node->data.u;
 	new_node->data.value = copied_node->data.value;
 
+	if (new_node->data.k == NODE_VAR) {
+		pointer_table[std::string(new_node->data.u.var)].push_back(new_node) ;
+	}
+
 	return new_node;
 }
 
-node_t *node_t::copy_tree_root (node_t *root) {
-	return copy_node(root);
+node_t *syntax_tree_t::copy_tree_root (node_t *root, std::unordered_map < std::string, std::list < node_t * > > pointer_table) {
+	return copy_node(root, pointer_table);
 }

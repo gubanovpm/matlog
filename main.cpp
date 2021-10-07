@@ -26,6 +26,10 @@ int main () {
 	
 	std::cout << "parser result: " ;
 	result.show();
+
+	std::cout << "eval result: " ;
+	eval_t whoami(result, "var1=1 var2=0");
+
 	result.destroy_syntax_tree_t(result.root_);
 	return 0;
 }

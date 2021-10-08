@@ -10,9 +10,9 @@
 
 int main () {
 
-
 	char str[256] = {};
-	fgets(str, 255, stdin);
+	if (fgets(str, 255, stdin) == nullptr)
+		abort();
 
 	std::cout << "TEST : " << str << std::endl;
 	lex_array_t array((const char *)(str));
@@ -28,7 +28,7 @@ int main () {
 	result.show();
 
 	std::cout << "eval   result: " ;
-	eval_t whoami(result, "q=0    w33 = 0 ");
+	eval_t whoami(result, "qwertyui=0");
 
 	return 0;
 }

@@ -9,6 +9,8 @@ struct eval_t {
 	syntax_tree_t *form_tree_;
 
 	eval_t (syntax_tree_t &copied_tree, std::string arg);
-	node_t *parse_eval(node_t *current);
+	node_t *parse_eval        (node_t *current);
+	node_t *de_morgans_laws    (node_t *current);
+	node_t *second(node_t *current);
 	~eval_t();
 };

@@ -101,7 +101,7 @@ lex_array_t::lex_array_t(const char *str) {
 				break;
 
 			case '-' :
-				if (counter < capacity_  && str[++counter] != '>') {
+				if (counter < capacity_  && str[counter + 1] != '>') {
 					std::cout << "Syntax error - unknow operation \'-\'!\n" ;
 					abort();
 				}
@@ -138,7 +138,7 @@ lex_array_t::lex_array_t(const char *str) {
 					--counter;
 					lexems_[size_].kind    = VAR;
 					lexems_[size_].lex.var = new char [temp_name.length() + 1];
-					for (int i = 0; i < temp_name.length(); ++i)
+					for (unsigned i = 0; i < temp_name.length(); ++i)
 						lexems_[size_].lex.var[i] = temp_name[i];
 					lexems_[size_].lex.var[temp_name.length()] = '\0';
 					++size_;

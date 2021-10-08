@@ -55,17 +55,35 @@ eval_t::eval_t(syntax_tree_t &copied_tree, std::string arg) {
 	}
 	form_tree_->root_ = parse_eval (form_tree_->root_) ;
 	form_tree_->show();
+	std::cout << "after morgan\'s laws : ";
+	form_tree_->root_ = second(form_tree_->root_);
+	form_tree_->show();
 }
 
 node_t *eval_t::parse_eval (node_t *current) {
 	if (current         == nullptr) return nullptr;
 	if (current->data.k != NODE_OP) return current;
+
+	if (current->data.u.op == IMPL) {
+		current->data.u.op  = OR;
+		node_t *new_node = new node_t ();
+		new_node->data.k    = NODE_OP;
+		new_node->right     = nullptr;
+		new_node->left      = current->left;
+		new_node->data.u.op = NOT;
+		new_node->isbracket = true;
+		
+		current->left = new_node;
+		return parse_eval(current);
+	}
 	
 	if (current->data.u.op == NOT) {
-		node_t *temp = parse_eval(current->left);
-		if (temp->data.k == NODE_OP && temp->data.u.op == NOT) {
-			return temp->left;
+		if (current->left->data.k == NODE_OP && current->left->data.u.op == NOT) {
+			current = current->left->left;
+			return parse_eval(current);
 		}
+		node_t *temp = parse_eval(current->left);
+
 		if (temp->data.k != NODE_VAL) {
 			current->left = temp;
 			return current;
@@ -169,6 +187,48 @@ node_t *eval_t::parse_eval (node_t *current) {
 	new_node->isbracket  = true;
 	current = new_node;
 	return new_node;
+}
+
+node_t *eval_t::second(node_t *current) {
+	if (current == nullptr) return nullptr;
+	if (current->data.k == NODE_OP && current->data.u.op == NOT) 
+		return de_morgans_laws (current->left);
+	current->left  = second(current->left );
+	current->right = second(current->right);
+	return current;
+}
+
+node_t *eval_t::de_morgans_laws (node_t *current) {
+	if (current == nullptr) return nullptr;
+
+	if (current->data.k == NODE_OP) { 
+		if (current->data.u.op == AND) {
+			current->data.u.op = OR;
+		}
+		if (current->data.u.op == OR) {
+			current->data.u.op = AND;
+		}
+		if (current->data.u.op == NOT) {
+			return (current = de_morgans_laws(current->left));
+		}
+		current->left  = de_morgans_laws(current->left );
+		current->right = de_morgans_laws(current->right);
+		return current;
+	}
+	
+	node_t *new_node = new node_t ();
+	new_node->data.k    = NODE_OP;
+	new_node->data.u.op = NOT;
+	new_node->right     = nullptr;
+	new_node->left      = current;
+	new_node->isbracket = true;
+
+	//printf("printf F for stack \n");
+	current = new_node;
+	//current->left = de_morgans_laws(current->left);
+
+
+	return current;
 }
 
 eval_t::~eval_t() {

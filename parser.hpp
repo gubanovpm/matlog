@@ -1,7 +1,5 @@
 #pragma once
 
-#include <list>
-#include <unordered_map>
 #include "lexer.hpp"
 
 enum node_kind_t  { NODE_OP = 41, NODE_VAL , NODE_VAR};
@@ -23,7 +21,7 @@ struct node_t {
 };
 
 void print_n(node_t *node);
-node_t *copy_node(node_t *copied_node, std::unordered_map < std::string, std::list < node_t * > > &pointer_table);
+node_t *copy_node(node_t *copied_node);
 
 struct syntax_tree_t {
 	node_t *root_ ;
@@ -31,6 +29,7 @@ struct syntax_tree_t {
 
 	syntax_tree_t();
 	syntax_tree_t(lex_array_t &lex_array);
+	syntax_tree_t(node_t *new_root);
 	void destroy_syntax_tree_t(node_t *node);
 	
 	node_t *parse_expr     (lex_array_t &lex_array);
@@ -38,7 +37,7 @@ struct syntax_tree_t {
 	node_t *parse_conjunct (lex_array_t &lex_array);
 	node_t *parse_term     (lex_array_t &lex_array);
 
-	node_t *copy_tree_root (node_t *root, std::unordered_map < std::string, std::list < node_t * > > &pointer_table);
+	node_t *copy_tree_root (node_t *root);
 
 	void show();
 	void print_node(node_t *root);					//private

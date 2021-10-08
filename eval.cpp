@@ -5,19 +5,19 @@
 #include "parser.hpp"
 #include "eval.hpp"
 
-eval_t::eval_t(syntax_tree_t &copied_tree, std::string arg) {
+eval_t::eval_t(syntax_tree_t &copied_tree) {
 	form_tree_         = new syntax_tree_t();
 	form_tree_->state_ = copied_tree.state_ ;
-	form_tree_->root_  = copied_tree.copy_tree_root(copied_tree.root_, pointer_table_);
+	form_tree_->root_  = copied_tree.copy_tree_root(copied_tree.root_);
 
-	lex_array_t lexems (arg.data());
+	form_tree_->root_ = parse_eval (form_tree_->root_) ;
+	form_tree_->root_ = second(form_tree_->root_);
+	form_tree_->show();
+}
 
-	std::cout << "lexems: " ;
-	for (int i = 0; i < lexems.size_ ; ++i) {
-		std::cout << "< " << lexems.lexems_[i] << " >   " ;
-	}
-
-	std::cout << " | after all: " ;
+syntax_tree_t eval_t::evaluation(std::string data){
+	lex_array_t lexems (data.data());
+	std::unordered_map < std::string, bool > variables_table_;
 
 	int state = 0;
 	while (state < lexems.size_ - 2) {
@@ -31,14 +31,8 @@ eval_t::eval_t(syntax_tree_t &copied_tree, std::string arg) {
 							 ": expected EQUAL operation"<< std::endl;
 					abort();
 				}
-				if (lexems.lexems_[state].kind == T || lexems.lexems_[state].kind == F) {
-					std::list < node_t * > cur_list = pointer_table_[std::string(lexems.lexems_[state - 2].lex.var)] ;
-					for (auto it : cur_list) {
-						it->data.k     = NODE_VAL;
-						it->data.u.val = lexems.lexems_[state].lex.value;
-						it->data.value = lexems.lexems_[state].lex.value;
-					}
-				}
+				if (lexems.lexems_[state].kind == T || lexems.lexems_[state].kind == F)
+					variables_table_[std::string(lexems.lexems_[state - 2].lex.var)] = lexems.lexems_[state].lex.value;
 				else {
 					std::cout << "eval - unexpected lexem" << 
 							 ": expected true or false value"<< std::endl;
@@ -53,12 +47,16 @@ eval_t::eval_t(syntax_tree_t &copied_tree, std::string arg) {
 				abort();
 		}
 	}
-	form_tree_->root_ = parse_eval (form_tree_->root_) ;
-	form_tree_->show();
-	std::cout << "after morgan\'s laws : ";
-	form_tree_->root_ = second(form_tree_->root_);
-	form_tree_->show();
-}
+
+	node_t *eval_root_ = form_tree_->copy_tree_root(form_tree_->root_);
+	eval_root_ = translate (eval_root_, variables_table_);
+	eval_root_ = parse_eval(eval_root_);
+
+	syntax_tree_t answ(eval_root_);
+	answ.show();
+
+	return answ;
+} 
 
 node_t *eval_t::parse_eval (node_t *current) {
 	if (current         == nullptr) return nullptr;
@@ -191,9 +189,10 @@ node_t *eval_t::parse_eval (node_t *current) {
 
 node_t *eval_t::second(node_t *current) {
 	if (current == nullptr) return nullptr;
-	if (current->data.k == NODE_OP && current->data.u.op == NOT) 
-		return de_morgans_laws (current->left);
 	current->left  = second(current->left );
+	if (current->data.k == NODE_OP && current->data.u.op == NOT)  {
+		return de_morgans_laws (current->left);
+	}
 	current->right = second(current->right);
 	return current;
 }
@@ -205,11 +204,11 @@ node_t *eval_t::de_morgans_laws (node_t *current) {
 		if (current->data.u.op == AND) {
 			current->data.u.op = OR;
 		}
-		if (current->data.u.op == OR) {
+		else if (current->data.u.op == OR) {
 			current->data.u.op = AND;
 		}
-		if (current->data.u.op == NOT) {
-			return (current = de_morgans_laws(current->left));
+		else if (current->data.u.op == NOT) {
+			return current->left;
 		}
 		current->left  = de_morgans_laws(current->left );
 		current->right = de_morgans_laws(current->right);
@@ -223,10 +222,23 @@ node_t *eval_t::de_morgans_laws (node_t *current) {
 	new_node->left      = current;
 	new_node->isbracket = true;
 
-	//printf("printf F for stack \n");
 	current = new_node;
-	//current->left = de_morgans_laws(current->left);
 
+	return current;
+}
+
+node_t *eval_t::translate(node_t *current, std::unordered_map < std::string, bool > variables_table) {
+	if (current == nullptr) return nullptr;
+
+	if (current->data.k == NODE_VAR && 
+	    variables_table.find(std::string(current->data.u.var)) != variables_table.end()) {
+			current->data.k     = NODE_VAL ;
+			current->data.u.val = variables_table[std::string(current->data.u.var)] ;
+			current->data.value = current->data.u.val ;
+	}
+
+	current->left  = translate(current->left , variables_table);
+	current->right = translate(current->right, variables_table);
 
 	return current;
 }

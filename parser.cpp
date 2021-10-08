@@ -10,6 +10,10 @@ syntax_tree_t::syntax_tree_t() {
 	root_  = nullptr;
 }
 
+syntax_tree_t::syntax_tree_t(node_t *new_root) {
+	root_ = new_root;
+}
+
 syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 	state_ = 0;
 	root_ = parse_expr(lex_array);
@@ -176,10 +180,12 @@ void print_n(node_t *node) {
 	switch (node->data.k) {
 		case NODE_OP:
 			switch (node->data.u.op) {
-				case AND:  std::cout << "&"  ; break;
-				case OR:   std::cout << "|"  ; break;
-				case IMPL: std::cout << "->" ; break;
-				case NOT:  std::cout << "~"  ; break;
+				case AND:   std::cout << "&"  ; break;
+				case OR:    std::cout << "|"  ; break;
+				case IMPL:  std::cout << "->" ; break;
+				case NOT:   std::cout << "~"  ; break;
+				case EQUAL: std::cout << "="  ; break;
+				default: std::cout << "parser error\n" ; abort(); 
 			}
 			break;
 		case NODE_VAL: std::cout << node->data.u.val ; break;
@@ -224,24 +230,20 @@ void syntax_tree_t::print_node(node_t *root) {
 	}
 }
 
-node_t *copy_node(node_t *copied_node, std::unordered_map < std::string, std::list < node_t * > > &pointer_table) {
+node_t *copy_node(node_t *copied_node) {
 	if (copied_node == nullptr)
 		return nullptr;
 	node_t *new_node = new node_t() ;
-	new_node->right = copy_node(copied_node->right, pointer_table);
-	new_node->left  = copy_node(copied_node->left , pointer_table);
+	new_node->right = copy_node(copied_node->right);
+	new_node->left  = copy_node(copied_node->left );
 
 	new_node->data.k     = copied_node->data.k;
 	new_node->data.u     = copied_node->data.u;
 	new_node->data.value = copied_node->data.value;
 
-	if (new_node->data.k == NODE_VAR) {
-		pointer_table[std::string(new_node->data.u.var)].push_back(new_node) ;
-	}
-
 	return new_node;
 }
 
-node_t *syntax_tree_t::copy_tree_root (node_t *root, std::unordered_map < std::string, std::list < node_t * > > &pointer_table) {
-	return copy_node(root, pointer_table);
+node_t *syntax_tree_t::copy_tree_root (node_t *root) {
+	return copy_node(root);
 }

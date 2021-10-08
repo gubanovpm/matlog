@@ -28,7 +28,9 @@ int main () {
 	result.show();
 
 	std::cout << "eval   result: " ;
-	eval_t whoami(result, "qwertyui=0");
+	eval_t whoami(result);
+
+	whoami.evaluation("a=1 b=0 c=1");
 
 	return 0;
 }

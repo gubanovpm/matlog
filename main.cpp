@@ -30,7 +30,7 @@ int main () {
 	std::cout << "eval   result: " ;
 	eval_t whoami(result);
 
-	whoami.evaluation("a=1 b=0 c=1");
-
+	std::cout << "is form TAUT?: " << whoami.is_TAUT() << std::endl;
+	std::cout << "is form SAT ?: " << whoami.is_SAT () << std::endl;
 	return 0;
 }

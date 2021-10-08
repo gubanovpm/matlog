@@ -1,4 +1,6 @@
 #include <unordered_map>
+#include <algorithm>
+#include <string>
 #include <list>
 
 #include "lexer.hpp"
@@ -53,7 +55,7 @@ syntax_tree_t eval_t::evaluation(std::string data){
 	eval_root_ = parse_eval(eval_root_);
 
 	syntax_tree_t answ(eval_root_);
-	answ.show();
+	//answ.show();
 
 	return answ;
 } 
@@ -243,6 +245,71 @@ node_t *eval_t::translate(node_t *current, std::unordered_map < std::string, boo
 	return current;
 }
 
+std::list < std::string > *eval_t::create_variables_list(node_t *root) {
+	std::list < std::string > *new_list = new std::list < std::string > ();
+	inorder_create_list(root , new_list);
+	return new_list;
+}
+
+void inorder_create_list(node_t *current, std::list < std::string > * lst) {
+	if (current == nullptr) return;
+	if (current->data.k == NODE_VAR && std::find(lst->begin(), lst->end(), std::string(current->data.u.var)) == lst->end()) {
+			lst->push_back(current->data.u.var);
+	}
+	inorder_create_list(current->left , lst);
+	inorder_create_list(current->right, lst);
+}
+
 eval_t::~eval_t() {
 	form_tree_->destroy_syntax_tree_t(form_tree_->root_);
+}
+
+bool eval_t::is_TAUT() {
+	std::list < std::string > * variable_list = create_variables_list(form_tree_->root_);
+	int var_count = variable_list->size();
+	unsigned long long int r_flags = 0ll;
+	std::string temp = "" ;
+
+	while (((r_flags >> var_count) & 1) != 1) {
+		int cur = 0;
+		temp = "";
+		for (auto it: *variable_list) {
+			temp += it + '=' + (char)(((r_flags >> cur) & 1) + '0') + ' ';
+			++cur;
+		}
+		//std::cout << "!" <<  temp << "!" << std::endl;
+		syntax_tree_t answ = evaluation(temp);
+		if (!answ.root_->data.value) {
+			std::cout << temp << "=> ";
+			return false;
+		}
+		++r_flags;
+	}
+
+	return true;
+}
+
+bool eval_t::is_SAT() {
+	std::list < std::string > * variable_list = create_variables_list(form_tree_->root_);
+	int var_count = variable_list->size();
+	unsigned long long int r_flags = 0ll;
+	std::string temp = "" ;
+
+	while (((r_flags >> var_count) & 1) != 1) {
+		int cur = 0;
+		temp = "";
+		for (auto it: *variable_list) {
+			temp += it + '=' + (char)(((r_flags >> cur) & 1) + '0') + ' ';
+			++cur;
+		}
+		//std::cout << "!" <<  temp << "!" << std::endl;
+		syntax_tree_t answ = evaluation(temp);
+		if (answ.root_->data.value) {
+			std::cout << temp << "=> " ;
+			return true;
+		}
+		++r_flags;
+	}
+
+	return false;
 }

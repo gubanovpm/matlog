@@ -16,13 +16,15 @@ struct eval_t {
 	bool is_TAUT();
 	bool  is_SAT();
 
-	// TODO: write is_TAUT and is_SAT with exp commplexity
-	// TODO: last step to cnf form(in tree view) - disjunctions and absorbtion laws
+	// TODO: last step to cnf form(in tree view) - distribut and absorbtion laws
 
 	node_t *parse_eval         (node_t *current);
 	node_t *second             (node_t *current);
+
 	node_t *de_morgans_laws    (node_t *current);
-	
+	node_t *law_of_distributivity(node_t *current);
+	node_t *law_of_absorption(node_t *current);
+
 	~eval_t();
 };
 

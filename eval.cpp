@@ -267,49 +267,73 @@ eval_t::~eval_t() {
 bool eval_t::is_TAUT() {
 	std::list < std::string > * variable_list = create_variables_list(form_tree_->root_);
 	int var_count = variable_list->size();
-	unsigned long long int r_flags = 0ll;
+	bool *r_flags = new bool [var_count + 1] {};
 	std::string temp = "" ;
 
-	while (((r_flags >> var_count) & 1) != 1) {
+	while (r_flags[var_count] != 1) {
 		int cur = 0;
 		temp = "";
 		for (auto it: *variable_list) {
-			temp += it + '=' + (char)(((r_flags >> cur) & 1) + '0') + ' ';
+			temp += it + '=' + (char)(r_flags[cur] + '0') + ' ';
 			++cur;
 		}
-		//std::cout << "!" <<  temp << "!" << std::endl;
 		syntax_tree_t answ = evaluation(temp);
 		if (!answ.root_->data.value) {
 			std::cout << temp << "=> ";
+			delete [] r_flags;
 			return false;
 		}
-		++r_flags;
+		for (int i = 0; i <= var_count; ++i) {
+			if (r_flags[i] == 0) {
+				r_flags[i] = 1;
+				break;
+			}
+			else r_flags[i] = 0;
+		}
 	}
 
+	delete [] r_flags;
 	return true;
 }
 
 bool eval_t::is_SAT() {
 	std::list < std::string > * variable_list = create_variables_list(form_tree_->root_);
 	int var_count = variable_list->size();
-	unsigned long long int r_flags = 0ll;
+	bool *r_flags = new bool [var_count + 1] {};
 	std::string temp = "" ;
 
-	while (((r_flags >> var_count) & 1) != 1) {
+	while (r_flags[var_count] != 1) {
 		int cur = 0;
 		temp = "";
 		for (auto it: *variable_list) {
-			temp += it + '=' + (char)(((r_flags >> cur) & 1) + '0') + ' ';
+			temp += it + '=' + (char)(r_flags[cur] + '0') + ' ';
 			++cur;
 		}
-		//std::cout << "!" <<  temp << "!" << std::endl;
 		syntax_tree_t answ = evaluation(temp);
 		if (answ.root_->data.value) {
 			std::cout << temp << "=> " ;
+			delete [] r_flags;
 			return true;
 		}
-		++r_flags;
+		for (int i = 0; i <= var_count; ++i) {
+			if (r_flags[i] == 0) {
+				r_flags[i] = 1;
+				break;
+			}
+			else r_flags[i] = 0;
+		}
 	}
 
+	delete [] r_flags;
 	return false;
+}
+
+node_t *eval_t::law_of_absorption(node_t *current) {
+	return current;
+}
+
+node_t *eval_t::law_of_distributivity(node_t *current) {
+	if (current == nullptr) return nullptr;
+
+	return current;
 }

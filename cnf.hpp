@@ -1,7 +1,7 @@
 #pragma once
 
-#include <unordered_map>
 #include <iostream>
+#include <unordered_set>
 #include <set>
 
 #include "lexer.hpp"
@@ -11,7 +11,11 @@
 struct literal_t {
 	int  name_;
 	bool sign_ = 0;
+
 };
+
+bool operator> (const literal_t &left, const literal_t &right);
+bool operator< (const literal_t &left, const literal_t &right);
 
 struct disjunct_t {
 	std::set <literal_t> elem_;
@@ -19,12 +23,15 @@ struct disjunct_t {
 	bool eval_disjunct(bool *eval);
 };
 
-void create_disjunct_(disjunct_t *disjunct, std::set <std::string> *variables, node_t *c_root);
+bool operator> (const disjunct_t &left, const disjunct_t &right);
+bool operator< (const disjunct_t &left, const disjunct_t &right);
+
+void create_disjunct_(disjunct_t *disjunct, std::unordered_set <std::string> *variables, node_t *c_root);
 
 struct cnf_t {
-	std::set <std::string> variables_;
-	std::set <disjunct_t>   dijuncts_ ;
-	bool                   *eval_    ;
+	std::unordered_set <std::string> variables_;
+	std::set <disjunct_t> dijuncts_;
+	bool *eval_;
 
 
 };

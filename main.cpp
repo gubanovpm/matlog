@@ -35,5 +35,11 @@ int main () {
 	std::cout << "is form SAT ?: " << whoami.is_SAT () << std::endl;
 
 	syntax_tree_t *cnf = whoami.cnf_form(&result);
+	
+	cnf_t *cnf_2 = new cnf_t ();
+	create_cnf_(cnf_2, cnf->root_);
+
+	cnf_2->print();
+	
 	return 0;
 }

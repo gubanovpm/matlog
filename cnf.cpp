@@ -29,26 +29,27 @@ void create_disjunct_(disjunct_t *disjunct, std::unordered_set <std::string> *va
 	switch (c_root->data.k) {
 		case NODE_OP : {
 			if (c_root->data.u.op == OR) {
-					create_disjunct_(disjunct, variables, c_root->left );
-					create_disjunct_(disjunct, variables, c_root->right);
+				create_disjunct_(disjunct, variables, c_root->left );
+				create_disjunct_(disjunct, variables, c_root->right);
 			}
 			else if (c_root->data.u.op == NOT) {
 				new_literal.sign_ = 1;
 				std::string name = std::string(c_root->left->data.u.var);
 				auto it_cur = variables->find(name);
-				new_literal.name_ = std::distance(it_cur, variables->begin());
-				if (it_cur == variables->end()) 
+				new_literal.name_ = std::distance(variables->begin(), it_cur);
+				if (it_cur == variables->end()) {
 					variables->insert(name);
+				}
 				disjunct->elem_.insert(new_literal);
 			}
 			break;
 		}
 
 		case NODE_VAR: {
-			new_literal.sign_ = 1;
+			new_literal.sign_ = 0;
 			std::string name = std::string(c_root->data.u.var);
 			auto it_cur = variables->find(name);
-			new_literal.name_ = std::distance(it_cur, variables->begin());
+			new_literal.name_ = std::distance(variables->begin(), it_cur);
 			if (it_cur == variables->end()) 
 				variables->insert(name);
 			disjunct->elem_.insert(new_literal);
@@ -64,6 +65,9 @@ void create_disjunct_(disjunct_t *disjunct, std::unordered_set <std::string> *va
 			disjunct->elem_.insert(new_literal);
 			break;
 		}
+		default:
+			printf("Why are you gay?\n");
+			abort();
 	}
 }
 
@@ -78,5 +82,25 @@ void create_cnf_(cnf_t *cnf, node_t *c_root) {
 		disjunct_t new_disjunct;
 		create_disjunct_(&new_disjunct, &cnf->variables_, c_root);
 		cnf->dijuncts_.insert(new_disjunct);
+	}
+}
+/*
+bool disjunct_t::eval_disjunct(bool *eval) {
+	for (auto it: elem_) {
+
+	}
+}*/
+
+void disjunct_t::print() {
+	for (auto it: elem_) {
+		std::cout << it.name_ << " with sign = " << it.sign_ << "; ";
+	}
+	std::cout << std::endl;
+}
+
+void cnf_t::print() {
+	
+	for (auto it: dijuncts_) {
+		it.print();
 	}
 }

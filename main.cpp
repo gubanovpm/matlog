@@ -3,6 +3,7 @@
 #include "lexer.hpp"
 #include "parser.hpp"
 #include "eval.hpp"
+#include "cnf.hpp"
 
 // TODO: just killing - before abort() delete all alocate memory
 // TODO: incapsulate brooo - add private and public methods plz

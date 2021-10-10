@@ -40,6 +40,8 @@ int main () {
 	create_cnf_(cnf_2, cnf->root_);
 
 	cnf_2->print();
-	
+
+	std::cout << DPLL(*cnf_2) << std::endl;
+
 	return 0;
 }

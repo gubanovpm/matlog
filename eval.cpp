@@ -273,16 +273,19 @@ bool eval_t::is_TAUT() {
 	while (r_flags[var_count] != 1) {
 		int cur = 0;
 		temp = "";
+
 		for (auto it: *variable_list) {
 			temp += it + '=' + (char)(r_flags[cur] + '0') + ' ';
 			++cur;
 		}
+
 		syntax_tree_t answ = evaluation(temp);
 		if (!answ.root_->data.value) {
 			std::cout << temp << "=> ";
 			delete [] r_flags;
 			return false;
 		}
+
 		for (int i = 0; i <= var_count; ++i) {
 			if (r_flags[i] == 0) {
 				r_flags[i] = 1;
@@ -305,16 +308,19 @@ bool eval_t::is_SAT() {
 	while (r_flags[var_count] != 1) {
 		int cur = 0;
 		temp = "";
+
 		for (auto it: *variable_list) {
 			temp += it + '=' + (char)(r_flags[cur] + '0') + ' ';
 			++cur;
 		}
+
 		syntax_tree_t answ = evaluation(temp);
 		if (answ.root_->data.value) {
 			std::cout << temp << "=> " ;
 			delete [] r_flags;
 			return true;
 		}
+
 		for (int i = 0; i <= var_count; ++i) {
 			if (r_flags[i] == 0) {
 				r_flags[i] = 1;
@@ -328,12 +334,61 @@ bool eval_t::is_SAT() {
 	return false;
 }
 
-node_t *eval_t::law_of_absorption(node_t *current) {
-	return current;
-}
-
 node_t *eval_t::law_of_distributivity(node_t *current) {
 	if (current == nullptr) return nullptr;
 
+	bool isNeeded = 0;
+	node_t *l_child, *r_child, *x_node;
+	if (current->data.k == NODE_OP && current->data.u.op == OR) {
+		if (current->left->data.k == NODE_OP && current->left->data.u.op == AND) {
+			l_child  = current->left->left ;
+			r_child  = current->left->right;
+			x_node   = current->right;
+			isNeeded = 1;
+		}
+		else if (current->right->data.k == NODE_OP && current->right->data.u.op == AND) {
+			l_child  = current->right->left ;
+			r_child  = current->right->right;
+			x_node   = current->left ;
+			isNeeded = 1;
+		}
+	}
+
+	if (isNeeded) {
+		node_t *new_node_l    = new node_t ();
+		new_node_l->isbracket = true;
+		new_node_l->data.k    = NODE_OP;
+		new_node_l->data.u.op = OR;
+		new_node_l->left      = l_child;
+		new_node_l->right     = x_node ;
+
+		node_t *new_node_r    = new node_t ();
+		new_node_r->isbracket = true;
+		new_node_r->data.k    = NODE_OP;
+		new_node_r->data.u.op = OR;
+		new_node_r->left      = x_node ;
+		new_node_r->right     = r_child;
+		
+		current->data.u.op  = AND;
+		current->left       = new_node_l;
+		current->right      = new_node_r;
+	}
+
+	current->left  = law_of_distributivity(current->left );
+	current->right = law_of_distributivity(current->right);
+
 	return current;
+}
+
+syntax_tree_t *eval_t::cnf_form(syntax_tree_t *copied_tree) {
+	syntax_tree_t * cnf = new syntax_tree_t();
+	cnf->state_         = copied_tree->state_ ;
+	cnf->root_          = copied_tree->copy_tree_root(copied_tree->root_);
+
+	cnf->root_ = parse_eval (cnf->root_) ;
+	cnf->root_ = second(cnf->root_);
+	cnf->root_ = law_of_distributivity(cnf->root_);
+	cnf->show();
+
+	return cnf;
 }

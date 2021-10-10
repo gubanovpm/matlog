@@ -32,5 +32,7 @@ int main () {
 
 	std::cout << "is form TAUT?: " << whoami.is_TAUT() << std::endl;
 	std::cout << "is form SAT ?: " << whoami.is_SAT () << std::endl;
+
+	syntax_tree_t *cnf = whoami.cnf_form(&result);
 	return 0;
 }

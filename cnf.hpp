@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <unordered_set>
+#include <vector>
 #include <set>
 
 #include "lexer.hpp"
@@ -27,10 +27,10 @@ struct disjunct_t {
 bool operator> (const disjunct_t &left, const disjunct_t &right);
 bool operator< (const disjunct_t &left, const disjunct_t &right);
 
-void create_disjunct_(disjunct_t *disjunct, std::unordered_set <std::string> *variables, node_t *c_root);
+void create_disjunct_(disjunct_t *disjunct, std::vector <std::string> *variables, node_t *c_root);
 
 struct cnf_t {
-	std::unordered_set <std::string> variables_ = {};
+	std::vector <std::string> variables_ = {};
 	std::set <disjunct_t> dijuncts_ = {};
 	bool *eval_;
 

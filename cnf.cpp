@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <string>
 #include <iostream>
+#include <vector>
 #include <set>
 
 #include "lexer.hpp"
@@ -22,7 +23,7 @@ bool operator< (const disjunct_t &left, const disjunct_t &right){
 	return (left.elem_.size() < right.elem_.size());
 }
 
-void create_disjunct_(disjunct_t *disjunct, std::unordered_set <std::string> *variables, node_t *c_root) {
+void create_disjunct_(disjunct_t *disjunct, std::vector <std::string> *variables, node_t *c_root) {
 	if (c_root == nullptr) return;
 
 	literal_t new_literal;
@@ -35,10 +36,10 @@ void create_disjunct_(disjunct_t *disjunct, std::unordered_set <std::string> *va
 			else if (c_root->data.u.op == NOT) {
 				new_literal.sign_ = 1;
 				std::string name = std::string(c_root->left->data.u.var);
-				auto it_cur = variables->find(name);
+				auto it_cur = std::find(variables->begin(), variables->end(), name);
 				new_literal.name_ = std::distance(variables->begin(), it_cur);
 				if (it_cur == variables->end()) {
-					variables->insert(name);
+					variables->push_back(name);
 				}
 				disjunct->elem_.insert(new_literal);
 			}
@@ -48,10 +49,10 @@ void create_disjunct_(disjunct_t *disjunct, std::unordered_set <std::string> *va
 		case NODE_VAR: {
 			new_literal.sign_ = 0;
 			std::string name = std::string(c_root->data.u.var);
-			auto it_cur = variables->find(name);
+			auto it_cur = std::find(variables->begin(), variables->end(), name);
 			new_literal.name_ = std::distance(variables->begin(), it_cur);
 			if (it_cur == variables->end()) 
-				variables->insert(name);
+				variables->push_back(name);
 			disjunct->elem_.insert(new_literal);
 			break;
 		}
@@ -84,12 +85,12 @@ void create_cnf_(cnf_t *cnf, node_t *c_root) {
 		cnf->dijuncts_.insert(new_disjunct);
 	}
 }
-/*
-bool disjunct_t::eval_disjunct(bool *eval) {
-	for (auto it: elem_) {
 
-	}
-}*/
+//bool disjunct_t::eval_disjunct(bool *eval) {
+//	for (auto it: elem_) {
+		
+//	}
+//}
 
 void disjunct_t::print() {
 	for (auto it: elem_) {
@@ -99,7 +100,6 @@ void disjunct_t::print() {
 }
 
 void cnf_t::print() {
-	
 	for (auto it: dijuncts_) {
 		it.print();
 	}

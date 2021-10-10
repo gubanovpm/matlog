@@ -1,6 +1,9 @@
 test
 .vscode
 test.txt
+create_test
+test.txt
+test1.txt
 
 /CMakeFiles
 CMakeCache.txt

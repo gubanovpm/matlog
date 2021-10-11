@@ -28,19 +28,19 @@ syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 
 	if (state_ != lex_array.size_) {
 		printf("strange input constructions!\n");
+		std::cout << lex_array.size_ << std::endl;
 		destroy_syntax_tree_t(root_);
+		root_ = nullptr;
 		return;
 	}
 }
 
 node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 	node_t *new_node = nullptr;
-	printf("conditional 1\n");
-	if (state_ >= lex_array.size_ || (root_ == nullptr && state_ != 0))
+	if (state_ >= lex_array.size_)
 		return nullptr;
 	switch (lex_array.lexems_[state_].kind) {
 		case BRAC:
-			printf("conditional 3\n");
 			if (lex_array.lexems_[state_].lex.b == LBRAC) {
 				++state_;
 			}

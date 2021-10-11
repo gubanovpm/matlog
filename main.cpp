@@ -25,9 +25,7 @@ int main () {
 	}
 	std::cout << std::endl;
 	syntax_tree_t result(array);
-	if (result.root_ == nullptr) {
-		return 0;
-	}
+	if (result.root_ == nullptr) return 0;
 	std::cout << "parser result: " ;
 	result.show();
 

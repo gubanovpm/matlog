@@ -18,6 +18,8 @@ struct node_t {
 	struct node_t      *left, *right;
 	struct node_data_t data;
 	bool               isbracket = false;
+
+	node_t();
 };
 
 void print_n(node_t *node);
@@ -30,6 +32,7 @@ struct syntax_tree_t {
 	syntax_tree_t();
 	syntax_tree_t(lex_array_t &lex_array);
 	syntax_tree_t(node_t *new_root);
+	~syntax_tree_t();
 	void destroy_syntax_tree_t(node_t *node);
 	
 	node_t *parse_expr     (lex_array_t &lex_array);

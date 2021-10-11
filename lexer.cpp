@@ -5,59 +5,27 @@ std::ostream &operator<< (std::ostream &left, lexem_t &lexem) {
 	switch (lexem.kind) {
 	case OP:
 		switch (lexem.lex.op) {
-		case OR:
-			std::cout << "|" ;
-			break;
-		case AND:
-			std::cout << "&" ;
-			break;
-		case NOT:
-			std::cout << "~" ;
-			break;
-		case IMPL:
-			std::cout << "->" ;
-			break;
-		case EQUAL:
-			std::cout << "=" ;
-			break;
-		default:
-			std::cout << "<unknown operation type>";
-			abort();
-			break;
+			case OR:    std::cout << "|"  ; break;
+			case AND:   std::cout << "&"  ; break;
+			case NOT:   std::cout << "~"  ; break;
+			case IMPL:  std::cout << "->" ; break;
+			case EQUAL:	std::cout << "="  ; break;
+			default:    std::cout << "<unknown operation type>"; exit(-1) ; break;
 		}
 		break;
 
-	case BRAC:
-		switch (lexem.lex.b) {
-			case RBRAC:
-				std::cout << ")" ;
-				break;
-			case LBRAC:
-				std::cout << "(";
-				break;
-			default:
-				std::cout << "<unknown bracket type>";
-				abort();
-				break;
-		}
-		break;
+		case BRAC:
+			switch (lexem.lex.b) {
+				case RBRAC: std::cout << ")" ; break;
+				case LBRAC: std::cout << "(" ; break;
+				default: std::cout << "<unknown bracket type>"; exit(-1) ; break;
+			}
+			break;
 
-	case VAR:
-		std::cout << lexem.lex.var ;
-		break;
-	
-	case T:
-		std::cout << "1" ;
-		break;
-
-	case F:
-		std::cout << "0";
-		break;
-	
-	default:
-		std::cout << "<unknown lexem type>" ;
-		abort();
-		break;
+		case VAR: std::cout << lexem.lex.var ; break;
+		case T: std::cout << "1" ; break;
+		case F: std::cout << "0" ; break;
+		default: std::cout << "<unknown lexem type>" ; exit(-1) ; break;
 	}
 	return left;
 }
@@ -103,7 +71,11 @@ lex_array_t::lex_array_t(const char *str) {
 			case '-' :
 				if (counter < capacity_  && str[counter + 1] != '>') {
 					std::cout << "Syntax error - unknow operation \'-\'!\n" ;
-					abort();
+					for (int i = 0; i < size_; ++i)
+					if (lexems_[i].kind == VAR)
+						delete [] lexems_[i].lex.var;
+					delete [] lexems_;
+					lexems_ = nullptr;
 				}
 
 				lexems_[size_].kind   = OP;
@@ -145,8 +117,13 @@ lex_array_t::lex_array_t(const char *str) {
 				}
 				
 				else if (isspace (str[counter]) == 0) {
-					printf ("a kak ? str[%d] = %c\n", counter, str[counter]);
-					abort();
+					std::cout << "Unexpected element : " << str[counter] << std::endl;
+					for (int i = 0; i < size_; ++i)
+					if (lexems_[i].kind == VAR)
+						delete [] lexems_[i].lex.var;
+					delete [] lexems_;
+					lexems_ = nullptr;
+					return ;
 				}
 				++counter;
 				continue;

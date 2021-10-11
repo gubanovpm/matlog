@@ -17,6 +17,7 @@ int main () {
 
 	std::cout << "TEST : " << str << std::endl;
 	lex_array_t array((const char *)(str));
+	if (array.lexems_ == nullptr) return 0;
 	
 	std::cout << "lexer  result: " ;
 	for (int i = 0; i < array.size_; ++i) {
@@ -24,7 +25,9 @@ int main () {
 	}
 	std::cout << std::endl;
 	syntax_tree_t result(array);
-	
+	if (result.root_ == nullptr) {
+		return 0;
+	}
 	std::cout << "parser result: " ;
 	result.show();
 

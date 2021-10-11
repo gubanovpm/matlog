@@ -15,7 +15,7 @@ struct lexem_t {
 };
 
 struct lex_array_t {
-	lexem_t *lexems_;
+	lexem_t *lexems_;  // vector
 	int size_;
 	int capacity_;
 

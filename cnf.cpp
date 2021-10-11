@@ -84,15 +84,15 @@ void create_disjunct_(disjunct_t *disjunct, std::vector <std::string> *variables
 
 		case NODE_VAL: {
 			int num;
-			if (c_root->data.value == 1) num = -1 ;
-				else num = -2;
+			if (c_root->data.value == 1) num = -2 ;
+				else num = -1;
 			new_literal.name_ = num;
 			new_literal.sign_ = 0;
 			disjunct->elem_.insert(new_literal);
 			break;
 		}
 		default:
-			printf("Why are you gay?\n");
+			printf("default?\n");
 			abort();
 	}
 }
@@ -114,8 +114,8 @@ void create_cnf_(cnf_t *cnf, node_t *c_root) {
 char disjunct_t::eval_disjunct(char *eval, int *visited) {
 	int prec = 0;
 	for (auto it: elem_) {
-		if (it.name_ == -1) return 1;
-		if (it.name_ == -2) continue;
+		if (it.name_ == -2) return 1;
+		if (it.name_ == -1) continue;
 		if (eval[it.name_] == -1) ++prec;
 		if (eval[it.name_] != -1 && eval[it.name_] ^ it.sign_) return 1;
 	}

@@ -1,9 +1,15 @@
 #include <iostream>
 #include <list>
-#include <unordered_map>
 
 #include "lexer.hpp"
 #include "parser.hpp"
+
+node_t::node_t() {
+	left  = nullptr ;
+	right = nullptr ;
+	isbracket  = false ;
+	data.value = -1;
+}
 
 syntax_tree_t::syntax_tree_t() {
 	state_ = 0;
@@ -11,7 +17,8 @@ syntax_tree_t::syntax_tree_t() {
 }
 
 syntax_tree_t::syntax_tree_t(node_t *new_root) {
-	root_ = new_root;
+	state_ = 0;
+	root_  = new_root;
 }
 
 syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
@@ -21,15 +28,14 @@ syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 	if (state_ != lex_array.size_) {
 		printf("strange input constructions!\n");
 		destroy_syntax_tree_t(root_);
-		delete &lex_array;
-		abort();
+		return;
 	}
 }
 
 node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 
-	node_t *new_node;
-	if (state_ >= lex_array.size_)
+	node_t *new_node = nullptr;
+	if (state_ >= lex_array.size_ || (root_ == nullptr && state_ != 0))
 		return nullptr;
 	switch (lex_array.lexems_[state_].kind) {
 		case BRAC:
@@ -38,9 +44,8 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			}
 			else {
 				std::cout << "Syntax error: unexpected bracket type - expected \'(\'\n" ;
-				//destroy_syntax_tree_t(root_);
-				//delete &lex_array;
-				abort();
+				state_ = lex_array.size_ + 1;
+				return nullptr;
 			}
 
 			new_node = parse_expr(lex_array);
@@ -52,9 +57,8 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			}
 			else {
 				std::cout << "Syntax error: unexpected bracket type - expected \')\'\n" ;
-				//destroy_syntax_tree_t(root_);
-				//delete &lex_array;
-				abort();
+				state_ = lex_array.size_ + 1;
+				return nullptr;
 			}
 			return new_node;
 		
@@ -62,11 +66,7 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node             = new node_t();
 			new_node->data.k     = NODE_VAR;
 			new_node->data.u.var = lex_array.lexems_[state_++].lex.var;
-			new_node->right      = nullptr;
-			new_node->left       = nullptr;
-			//if (variables_.find(std::string(lex_array.lexems_[state_++].lex.var)) == variables_.end()) {
-			//	variables_[std::string(lex_array.lexems_[state_++].lex.var)] = new_node;
-			//}
+
 			return new_node;
 		case OP:
 			if (lex_array.lexems_[state_].lex.op == NOT) {
@@ -75,22 +75,18 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 				new_node->data.u.op  = lex_array.lexems_[state_++].lex.op;
 				
 				new_node->left       = parse_term(lex_array);
-				new_node->right      = nullptr;
 				
 				return new_node;
 			}
 			printf("Operation does not exist!\n");
-			destroy_syntax_tree_t(root_);
-			delete &lex_array;
-			abort();
+			state_ = lex_array.size_ + 1;
+			return nullptr;
 		
 		case T:
 			new_node             = new node_t();
 			new_node->data.k     = NODE_VAL;
 			new_node->data.u.val = 1;
 			new_node->data.value = 1;
-			new_node->right      = nullptr;
-			new_node->left       = nullptr;
 			++state_;
 			
 			return new_node;
@@ -100,31 +96,29 @@ node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 			new_node->data.k     = NODE_VAL;
 			new_node->data.u.val = 0;
 			new_node->data.value = 0;
-			new_node->right      = nullptr;
-			new_node->left       = nullptr;
 			++state_;
 			
 			return new_node;
 		default:
 			std::cout << "Syntax error: unknow term type\n" ;
-			destroy_syntax_tree_t(root_);
-			delete &lex_array;
-			abort();
+			state_ = lex_array.size_ + 1;
+			return nullptr;
 	}
 }
 
 node_t *syntax_tree_t::parse_conjunct(lex_array_t &lex_array) {
-	node_t *new_node;
+	node_t *new_node = nullptr;
 
 	new_node = parse_term(lex_array);
 	if (state_ >= lex_array.size_ || lex_array.lexems_[state_].lex.op != AND) {
 		return new_node;
 	}
 
-	node_t *temp = new node_t ();
-	temp->data.k    = NODE_OP;
-	temp->data.u.op = AND;
-	temp->left      = new_node;
+	node_t *temp     = new node_t ();
+	temp->data.k     = NODE_OP;
+	temp->data.u.op  = AND;
+	temp->left       = new_node;
+	temp->isbracket  = false;
 
 	++state_;
 	temp->right     = parse_conjunct(lex_array);
@@ -141,10 +135,12 @@ node_t *syntax_tree_t::parse_disjunct(lex_array_t &lex_array) {
 		return new_node;
 	}
 
-	node_t *temp = new node_t();
+	node_t *temp    = new node_t();
 	temp->data.k    = NODE_OP;
 	temp->data.u.op = OR;
 	temp->left      = new_node;
+	temp->isbracket = false;
+	
 	
 	++state_; 
 	temp->right     = parse_disjunct(lex_array);
@@ -165,6 +161,7 @@ node_t *syntax_tree_t::parse_expr(lex_array_t &lex_array) {
 	temp->data.k    = NODE_OP;
 	temp->data.u.op = IMPL;
 	temp->left      = new_node;
+	temp->isbracket = false;
 
 	++state_; 
 	temp->right     = parse_expr(lex_array);
@@ -185,7 +182,7 @@ void print_n(node_t *node) {
 				case IMPL:  std::cout << "->" ; break;
 				case NOT:   std::cout << "~"  ; break;
 				case EQUAL: std::cout << "="  ; break;
-				default: std::cout << "parser error\n" ; abort(); 
+				default:    std::cout << "parser error\n" ; return; 
 			}
 			break;
 		case NODE_VAL: std::cout << node->data.u.val ; break;
@@ -246,4 +243,8 @@ node_t *copy_node(node_t *copied_node) {
 
 node_t *syntax_tree_t::copy_tree_root (node_t *root) {
 	return copy_node(root);
+}
+
+syntax_tree_t::~syntax_tree_t() {
+	destroy_syntax_tree_t(root_);
 }

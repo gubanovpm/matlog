@@ -1,1 +1,0 @@
-[ 16%] Building CXX object CMakeFiles/sat_solver.dir/cnf.cpp.o

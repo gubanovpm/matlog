@@ -69,7 +69,7 @@ lex_array_t::lex_array_t(const char *str) {
 				break;
 
 			case '-' :
-				if (counter < capacity_  && str[counter + 1] != '>') {
+				if (str[counter + 1] != '>') {
 					std::cout << "Syntax error - unknow operation \'-\'!\n" ;
 					for (int i = 0; i < size_; ++i)
 					if (lexems_[i].kind == VAR)

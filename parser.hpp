@@ -15,9 +15,9 @@ struct node_data_t {
 };
 
 struct node_t {
-	struct node_t      *left, *right;
-	struct node_data_t data;
-	bool               isbracket = false;
+	node_t      *left, *right;
+	node_data_t data;
+	bool        isbracket = false;
 
 	node_t();
 };
@@ -32,6 +32,9 @@ struct syntax_tree_t {
 	syntax_tree_t();
 	syntax_tree_t(lex_array_t &lex_array);
 	syntax_tree_t(node_t *new_root);
+	
+	syntax_tree_t(const syntax_tree_t &other);
+
 	~syntax_tree_t();
 	void destroy_syntax_tree_t(node_t *node);
 	

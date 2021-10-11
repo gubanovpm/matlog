@@ -31,7 +31,9 @@ int main () {
 
 	std::cout << "eval   result: " ;
 	eval_t whoami(result);
-
+	syntax_tree_t end = whoami.evaluation("v1 = 1  v2 = 0");
+	end.show();
+/*
 	std::cout << "is form TAUT?: " << whoami.is_TAUT() << std::endl;
 	std::cout << "is form SAT ?: " << whoami.is_SAT () << std::endl;
 
@@ -43,6 +45,6 @@ int main () {
 	cnf_2->print();
 
 	std::cout << DPLL(*cnf_2) << std::endl;
-
+*/
 	return 0;
 }

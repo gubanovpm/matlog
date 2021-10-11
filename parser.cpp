@@ -35,6 +35,10 @@ syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 	}
 }
 
+syntax_tree_t::syntax_tree_t(const syntax_tree_t &other) {
+	root_ = other.root_;
+}
+
 node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
 	node_t *new_node = nullptr;
 	if (state_ >= lex_array.size_)

@@ -23,6 +23,7 @@ syntax_tree_t::syntax_tree_t(node_t *new_root) {
 
 syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 	state_ = 0;
+	root_ = nullptr;
 	root_ = parse_expr(lex_array);
 
 	if (state_ != lex_array.size_) {
@@ -33,12 +34,13 @@ syntax_tree_t::syntax_tree_t(lex_array_t &lex_array) {
 }
 
 node_t *syntax_tree_t::parse_term(lex_array_t &lex_array) {
-
 	node_t *new_node = nullptr;
+	printf("conditional 1\n");
 	if (state_ >= lex_array.size_ || (root_ == nullptr && state_ != 0))
 		return nullptr;
 	switch (lex_array.lexems_[state_].kind) {
 		case BRAC:
+			printf("conditional 3\n");
 			if (lex_array.lexems_[state_].lex.b == LBRAC) {
 				++state_;
 			}

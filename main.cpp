@@ -31,9 +31,7 @@ int main () {
 
 	std::cout << "eval   result: " ;
 	eval_t whoami(result);
-	syntax_tree_t end = whoami.evaluation("v1 = 1  v2 = 0");
-	end.show();
-/*
+
 	std::cout << "is form TAUT?: " << whoami.is_TAUT() << std::endl;
 	std::cout << "is form SAT ?: " << whoami.is_SAT () << std::endl;
 
@@ -42,9 +40,13 @@ int main () {
 	cnf_t *cnf_2 = new cnf_t ();
 	create_cnf_(cnf_2, cnf->root_);
 
+	//cnf_2->print();
+	cnf_2->_3form();
+	printf("3_cnf form: \n");
 	cnf_2->print();
 
+
 	std::cout << DPLL(*cnf_2) << std::endl;
-*/
+
 	return 0;
 }

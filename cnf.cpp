@@ -65,6 +65,7 @@ void create_disjunct_(disjunct_t *disjunct, std::vector <std::string> *variables
 					variables->push_back(name);
 				}
 				disjunct->elem_.insert(new_literal);
+
 			}
 			break;
 		}
@@ -79,6 +80,7 @@ void create_disjunct_(disjunct_t *disjunct, std::vector <std::string> *variables
 			if (it_cur == variables->end()) 
 				variables->push_back(name);
 			disjunct->elem_.insert(new_literal);
+
 			break;
 		}
 
@@ -100,18 +102,18 @@ void create_disjunct_(disjunct_t *disjunct, std::vector <std::string> *variables
 void create_cnf_(cnf_t *cnf, node_t *c_root) {
 	if (c_root == nullptr) return;
 
-	if (c_root->data.k && c_root->data.u.op == AND) {
+	if (c_root->data.k == NODE_OP && c_root->data.u.op == AND) {
 		create_cnf_(cnf, c_root->left );
 		create_cnf_(cnf, c_root->right);
 	}
 	else {
 		disjunct_t new_disjunct;
 		create_disjunct_(&new_disjunct, &cnf->variables_, cnf->visited_, cnf->balance_, c_root);
-		cnf->disjuncts_.insert(new_disjunct);
+		cnf->disjuncts_.push_back(new_disjunct);
 	}
 }
 
-char disjunct_t::eval_disjunct(char *eval, int *visited) {
+char disjunct_t::eval_disjunct(char *eval) {
 	int prec = 0;
 	for (auto it: elem_) {
 		if (it.name_ == -2) return 1;
@@ -126,7 +128,7 @@ char disjunct_t::eval_disjunct(char *eval, int *visited) {
 char cnf_t::eval() {
 	int temp ;
 	for (auto it:disjuncts_) {
-		temp = it.eval_disjunct(val_, visited_);
+		temp = it.eval_disjunct(val_);
 		if (temp == -1) return -1;
 		if (temp == 0 ) return  0;
 	}
@@ -134,6 +136,7 @@ char cnf_t::eval() {
 }
 
 void disjunct_t::print() {
+	if (elem_.size() == 0) return ;
 	for (auto it: elem_) {
 		std::cout << it.name_ << " with sign = " << it.sign_ << "; ";
 	}
@@ -145,13 +148,54 @@ void cnf_t::print() {
 		it.print();
 	}
 }
+
+void cnf_t::_3form() {
+	int count = 0;
+	for (auto state: disjuncts_) {
+		int temp_state_size = state.elem_.size();
+		if (temp_state_size < 3) {
+			for (int i = 0; i < 3 - temp_state_size; ++i)
+				state.elem_.insert({-1, 0});
+		}
+		if (temp_state_size > 3) {
+			int num_of_var = variables_.size();
+			variables_.push_back("_");
+			literal_t insert_literal = {num_of_var, 0};
+			literal_t new_literal;
+
+			while (temp_state_size > 2) {
+				disjunct_t new_disjunct = {};
+
+				variables_.push_back("_");
+				new_literal = {num_of_var, 1};
+				new_disjunct.elem_.insert(new_literal);
+
+				new_disjunct.elem_.insert({state.elem_.begin()->name_, state.elem_.begin()->sign_});
+				state.elem_.erase(state.elem_.begin());
+				--temp_state_size;
+				++num_of_var;
+
+				variables_.push_back("_");
+				new_literal = {num_of_var, 0};
+				new_disjunct.elem_.insert(new_literal);
+
+				disjuncts_.push_back(new_disjunct);
+			}
+			state.elem_.insert(insert_literal);
+			disjuncts_.push_back(state);
+			disjuncts_[count] = {};
+		}
+		++count;
+	}
+}
+
  
 void cnf_t::unit_propagate() {
 	bool isPropagate = false;
 	for (auto it:disjuncts_) {
 		int counter = 0;
 		literal_t literal;
-		if (it.eval_disjunct(val_, visited_) == -1)
+		if (it.eval_disjunct(val_) == -1)
 			for (auto i: it.elem_) {
 				if (val_[i.name_] == -1) {
 					++counter;
@@ -168,7 +212,7 @@ void cnf_t::unit_propagate() {
 }
 
 void cnf_t::pure_literal() {
-	for (int i = 0; i < variables_.size(); ++i) {
+	for (long unsigned int i = 0; i < variables_.size(); ++i) {
 		if (visited_[i] == balance_[i] || !balance_[i]) {
 			if (!balance_[i]) val_[i] = 1;
 				else val_[i] = 0;
@@ -185,19 +229,19 @@ bool DPLL(cnf_t cnf) {
 	cnf.pure_literal();
 
 	for (auto state: cnf.disjuncts_) {
-		char temp = state.eval_disjunct(cnf.val_, cnf.visited_);
+		char temp = state.eval_disjunct(cnf.val_);
 		if (temp == 1) {
 			for (auto it: state.elem_) {
 				--cnf.visited_[it.name_];
 			}
-			cnf.disjuncts_.erase(state);
+			state = {};
 		}
 		if (temp == 0) return false;
 	}
 
-	int new_var;
+	int new_var = 0;
 
-	for (int i = 0 ; i < cnf.variables_.size(); ++i) {
+	for (long unsigned int i = 0 ; i < cnf.variables_.size(); ++i) {
 		if (cnf.val_[i] == -1) {
 			isEnd   = 0;
 			new_var = i;

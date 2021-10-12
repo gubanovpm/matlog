@@ -24,6 +24,7 @@ struct node_t {
 
 void print_n(node_t *node);
 node_t *copy_node(node_t *copied_node);
+void destroy_subtree(node_t *current);
 
 struct syntax_tree_t {
 	node_t *root_ ;

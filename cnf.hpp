@@ -20,11 +20,8 @@ struct disjunct_t {
 	std::set <literal_t> elem_ = {};
 	
 	void print();
-	char eval_disjunct(char *eval, int *visited);
+	char eval_disjunct(char *eval);
 };
-
-bool operator> (const disjunct_t &left, const disjunct_t &right);
-bool operator< (const disjunct_t &left, const disjunct_t &right);
 
 void create_disjunct_(disjunct_t *disjunct, std::vector <std::string> *variables, int *visited, int *balance, node_t *c_root);
 
@@ -32,9 +29,11 @@ struct cnf_t {
 
 	cnf_t();
 	cnf_t(const cnf_t &other);
+	
+	void _3form();
 
 	std::vector <std::string> variables_ = {};
-	std::set <disjunct_t> disjuncts_ = {};
+	std::vector <disjunct_t>  disjuncts_ = {};
 
 	char *val_;
 	int  *visited_;

@@ -254,3 +254,12 @@ node_t *syntax_tree_t::copy_tree_root (node_t *root) {
 syntax_tree_t::~syntax_tree_t() {
 	destroy_syntax_tree_t(root_);
 }
+
+void destroy_subtree(node_t *current) {
+	if (current == nullptr) return;
+
+	destroy_subtree(current->left );
+	destroy_subtree(current->right);
+
+	delete current;
+}

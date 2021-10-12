@@ -116,9 +116,9 @@ node_t *eval_t::parse_eval (node_t *current) {
 			new_node->data.value = 0;
 			new_node->isbracket  = true;
 
-			syntax_tree_t del_tree(current);
-			del_tree.destroy_syntax_tree_t(current);
-
+			delete current;
+			destroy_subtree(temp1);
+			destroy_subtree(temp2);
 			return new_node;
 		}
 
@@ -129,15 +129,15 @@ node_t *eval_t::parse_eval (node_t *current) {
 
 		if ((current->data.u.op == OR   && (temp1->data.value == 1 || temp2->data.value == 1)) ||
 			(current->data.u.op == IMPL && (temp1->data.value == 0 || temp2->data.value == 1))) {
-				node_t *new_node = new node_t ();;
+				node_t *new_node = new node_t ();
 				new_node->data.k = NODE_VAL;
 				new_node->data.u.val = 1;
 				new_node->data.value = 1;
 				new_node->isbracket  = true;
 
-				syntax_tree_t del_tree(current);
-				del_tree.destroy_syntax_tree_t(current);
-
+				delete current;
+				destroy_subtree(temp1);
+				destroy_subtree(temp2);
 				return new_node;
 		}
 
@@ -186,6 +186,8 @@ node_t *eval_t::parse_eval (node_t *current) {
 	new_node->isbracket  = true;
 
 	delete current;
+	delete temp1;
+	delete temp2;
 	current = new_node;
 	return new_node;
 }

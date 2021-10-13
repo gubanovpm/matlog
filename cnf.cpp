@@ -158,6 +158,8 @@ void cnf_t::print() {
 void cnf_t::_3form() {
 	int count = 0;
 	for (auto state: disjuncts_) {
+		state = *(disjuncts_.begin() + count);
+		if (state.elem_.size() == 0) continue;
 		int temp_state_size = state.elem_.size();
 		if (temp_state_size < 3) {
 			for (int i = 0; i < 3 - temp_state_size; ++i)
@@ -271,3 +273,4 @@ bool DPLL(cnf_t cnf) {
 	cnf.val_[new_var] = 0;
 	return DPLL(cnf);
 }
+

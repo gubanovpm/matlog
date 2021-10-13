@@ -102,6 +102,9 @@ void create_disjunct_(disjunct_t *disjunct, std::vector <std::string> *variables
 void create_cnf_(cnf_t *cnf, node_t *c_root) {
 	if (c_root == nullptr) return;
 
+	for (int i = 0; i < 255; ++i)
+		cnf->val_[i] = -1;
+
 	if (c_root->data.k == NODE_OP && c_root->data.u.op == AND) {
 		create_cnf_(cnf, c_root->left );
 		create_cnf_(cnf, c_root->right);
@@ -119,7 +122,7 @@ char disjunct_t::eval_disjunct(char *eval) {
 		if (it.name_ == -2) return 1;
 		if (it.name_ == -1) continue;
 		if (eval[it.name_] == -1) ++prec;
-		if (eval[it.name_] != -1 && eval[it.name_] ^ it.sign_) return 1;
+		if (eval[it.name_] != -1 && (eval[it.name_] ^ it.sign_)) return 1; 
 	}
 	if (prec != 0) return -1;
 	return 0;
@@ -127,7 +130,9 @@ char disjunct_t::eval_disjunct(char *eval) {
 
 char cnf_t::eval() {
 	int temp ;
-	for (auto it:disjuncts_) {
+	for (auto it: disjuncts_) {
+		if (it.elem_.size() == 0) continue;
+		
 		temp = it.eval_disjunct(val_);
 		if (temp == -1) return -1;
 		if (temp == 0 ) return  0;
@@ -192,9 +197,11 @@ void cnf_t::_3form() {
  
 void cnf_t::unit_propagate() {
 	bool isPropagate = false;
+	literal_t literal = {-3, 0};
 	for (auto it:disjuncts_) {
+		if (it.elem_.size() == 0) continue;
+
 		int counter = 0;
-		literal_t literal;
 		if (it.eval_disjunct(val_) == -1)
 			for (auto i: it.elem_) {
 				if (val_[i.name_] == -1) {
@@ -203,42 +210,51 @@ void cnf_t::unit_propagate() {
 				}
 				if (counter > 1) break;
 			}
+
 		if (counter == 1) {
 			isPropagate = true;
 			val_[literal.name_] = 1 ^ literal.sign_;
 		}
 	}
+
 	if (isPropagate) unit_propagate();
 }
 
 void cnf_t::pure_literal() {
 	for (long unsigned int i = 0; i < variables_.size(); ++i) {
+		if (visited_[i] == 0) continue;
 		if (visited_[i] == balance_[i] || !balance_[i]) {
-			if (!balance_[i]) val_[i] = 1;
-				else val_[i] = 0;
+			if (!balance_[i]) val_[i] = 0;
+				else val_[i] = 1;
 		}
 	}
 }
 
 bool DPLL(cnf_t cnf) {
 	char isEnd = cnf.eval();
-	if (isEnd == 1) return true;
+	if (isEnd == 1) return true ;
 	if (isEnd == 0) return false;
 
 	cnf.unit_propagate();
 	cnf.pure_literal();
+	//for (long unsigned int i = 0; i < cnf.variables_.size(); ++i) {
+	//	std::cout << i << " value = " << (int)cnf.val_[i] << "; visited = " << cnf.visited_[i] << "; balance = " << cnf.balance_[i] << std::endl ;
+	//}
 
 	for (auto state: cnf.disjuncts_) {
+		if (state.elem_.size() == 0) continue;
 		char temp = state.eval_disjunct(cnf.val_);
 		if (temp == 1) {
 			for (auto it: state.elem_) {
 				--cnf.visited_[it.name_];
+				if (it.sign_ == 0) --cnf.balance_[it.name_];
 			}
 			state = {};
 		}
 		if (temp == 0) return false;
 	}
 
+	//cnf.print();
 	int new_var = 0;
 
 	for (long unsigned int i = 0 ; i < cnf.variables_.size(); ++i) {
@@ -248,10 +264,13 @@ bool DPLL(cnf_t cnf) {
 			break;
 		}
 	}
-	if (!isEnd) return false;
+
+	if (!isEnd) return cnf.eval();
+	
 	cnf.val_[new_var] = 1;
 	bool temp_1 = DPLL(cnf);
 	if (temp_1) return true;
+	
 	cnf.val_[new_var] = 0;
 	return DPLL(cnf);
 }

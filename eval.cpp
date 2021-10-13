@@ -360,6 +360,7 @@ node_t *eval_t::law_of_distributivity(node_t *current) {
 	}
 
 	if (isNeeded) {
+		flag_changed = 1;
 		node_t *new_node_l    = new node_t ();
 		new_node_l->isbracket = true;
 		new_node_l->data.k    = NODE_OP;
@@ -392,7 +393,13 @@ syntax_tree_t *eval_t::cnf_form(syntax_tree_t *copied_tree) {
 
 	cnf->root_ = parse_eval (cnf->root_) ;
 	cnf->root_ = second(cnf->root_);
-	cnf->root_ = law_of_distributivity(cnf->root_);
+
+	while (cnf->root_->data.k == NODE_OP && cnf->root_->data.u.op == OR) {
+		flag_changed = 0;
+		cnf->root_ = law_of_distributivity(cnf->root_);
+		if (!flag_changed) break;
+	}
+
 	cnf->show();
 
 	return cnf;

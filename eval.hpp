@@ -6,6 +6,8 @@
 
 void inorder_create_list(node_t *current, std::list < std::string > * lst);
 
+static int flag_changed = 0;
+
 struct eval_t {
 	syntax_tree_t *form_tree_;
 

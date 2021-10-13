@@ -149,6 +149,7 @@ void disjunct_t::print() {
 }
 
 void cnf_t::print() {
+	
 	for (auto it: disjuncts_) {
 		it.print();
 	}
@@ -237,9 +238,6 @@ bool DPLL(cnf_t cnf) {
 
 	cnf.unit_propagate();
 	cnf.pure_literal();
-	//for (long unsigned int i = 0; i < cnf.variables_.size(); ++i) {
-	//	std::cout << i << " value = " << (int)cnf.val_[i] << "; visited = " << cnf.visited_[i] << "; balance = " << cnf.balance_[i] << std::endl ;
-	//}
 
 	for (auto state: cnf.disjuncts_) {
 		if (state.elem_.size() == 0) continue;
@@ -254,7 +252,6 @@ bool DPLL(cnf_t cnf) {
 		if (temp == 0) return false;
 	}
 
-	//cnf.print();
 	int new_var = 0;
 
 	for (long unsigned int i = 0 ; i < cnf.variables_.size(); ++i) {

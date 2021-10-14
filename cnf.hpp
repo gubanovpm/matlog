@@ -24,6 +24,8 @@ struct disjunct_t {
 };
 
 void create_disjunct_(disjunct_t *disjunct, std::vector <std::string> *variables, int *visited, int *balance, node_t *c_root);
+std::string add(int a, int b, int i);
+std::string sumremainder(int a,int  b,int i);
 
 struct cnf_t {
 

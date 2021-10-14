@@ -5,8 +5,8 @@
 #include "eval.hpp"
 #include "cnf.hpp"
 
-// TODO: just killing - before abort() delete all alocate memory
-// TODO: incapsulate brooo - add private and public methods plz
+// TODO: before abort() delete all alocate memory
+// TODO: incapsulate - add private and public methods plz
 // TODO: kings don't rule forever, my son - add inheritance in parser and lexer
 
 int main () {
@@ -16,7 +16,7 @@ int main () {
 		abort();
 
 	std::cout << "TEST : " << str << std::endl;
-	lex_array_t array((const char *)(str));
+	lex_array_t array(add(1024, 123, 6).data());
 	if (array.lexems_ == nullptr) return 0;
 	
 	std::cout << "lexer  result: " ;
@@ -48,7 +48,9 @@ int main () {
 	cnf_2->print();
 
 
-	std::cout << DPLL(*cnf_2) << std::endl;
+	std::cout << "DPLL RESULT : " << DPLL(*cnf_2) << std::endl;
+
+	//std::cout <<  << std::endl;
 
 	return 0;
 }

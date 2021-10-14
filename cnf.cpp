@@ -23,6 +23,9 @@ bool operator< (const disjunct_t &left, const disjunct_t &right){
 	return (left.elem_.size() < right.elem_.size());
 }
 
+std::string add(int a, int b, int i);
+std::string sumremainder(int a,int  b,int i);
+
 cnf_t::cnf_t(const cnf_t &other) {
 	variables_ = other.variables_;
 	disjuncts_  = other.disjuncts_;
@@ -40,9 +43,9 @@ cnf_t::cnf_t(const cnf_t &other) {
 }
 
 cnf_t::cnf_t() {
-	val_     = new char [255] ;
-	visited_ = new int  [255] ;
-	balance_ = new int  [255] ;
+	val_     = new char [1024] ;
+	visited_ = new int  [1024] ;
+	balance_ = new int  [1024] ;
 }
 
 void create_disjunct_(disjunct_t *disjunct, std::vector <std::string> *variables,  int *visited, int *balance, node_t *c_root) {
@@ -274,3 +277,27 @@ bool DPLL(cnf_t cnf) {
 	return DPLL(cnf);
 }
 
+std::string sumremainder(int a,int  b,int i) {
+	if (i < 1) return "0";
+	std::string res = "(((" ;
+	std::string sub_a = "avar", sub_b = "bvar";
+	sub_a += std::to_string(i);
+	sub_b += std::to_string(i);
+	res += (sub_a + "&" + sub_b + ")|(" + sub_a + "|" + sub_b + ")&" + sumremainder(a, b, i - 1) + "))");
+
+	return res;
+}
+
+std::string add(int a, int b, int i) {
+	std::string sub_a = "avar", sub_b = "bvar";
+	sub_a += std::to_string(i);
+	sub_b += std::to_string(i);
+
+	std::cout << sub_a << " " << sub_b << std::endl;
+	std::string res = "";
+	res += (sub_a + "&" + sub_b + "|(" + sub_a + "|" +sub_b + ")&" + sumremainder(a, b, i - 1)) ;
+	return res;
+}
+
+//s_i = (a_i & b_i || (a_i || b_i) & p_i)
+//p_i = (((a_(i-1) && b_(i-1)) || (a_(i-1) || b_(i-1)) & p_(i-1)))

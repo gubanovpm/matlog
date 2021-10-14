@@ -16,7 +16,7 @@ int main () {
 		abort();
 
 	std::cout << "TEST : " << str << std::endl;
-	lex_array_t array(add(1024, 123, 6).data());
+	lex_array_t array(str);
 	if (array.lexems_ == nullptr) return 0;
 	
 	std::cout << "lexer  result: " ;

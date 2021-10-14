@@ -399,6 +399,7 @@ syntax_tree_t *eval_t::cnf_form(syntax_tree_t *copied_tree) {
 		cnf->root_ = law_of_distributivity(cnf->root_);
 		if (!flag_changed) break;
 	}
+	cnf->root_ = law_of_distributivity(cnf->root_);
 
 	cnf->show();
 

@@ -1,12 +1,2 @@
-test
-.vscode
-test.txt
-create_test
-test.txt
-test1.txt
+build
 
-/CMakeFiles
-CMakeCache.txt
-cmake_install.cmake
-sat_solver
-Makefile

@@ -1,9 +1,18 @@
-cmake_minimum_required(VERSION 2.6)
-project(sat_solver)
+cmake_minimum_required(VERSION 3.5.0)
+project(SATsolver VERSION 2.0 LANGUAGES CXX)
 
-set (SOURCES main.cpp parser.cpp lexer.cpp eval.cpp cnf.cpp)
-set (HEADERS parser.hpp lexer.hpp eval.hpp cnf.hpp)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED 17)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -Wextra")
+set(PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
+set(PROJECT_BUILD_DIR ${PROJECT_ROOT_DIR}/build)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BUILD_DIR})
 
-add_executable(sat_solver ${SOURCES})
+find_package(BISON REQUIRED)
+find_package(FLEX REQUIRED)
+
+include_directories(
+  include
+)
+
+add_subdirectory(sources)

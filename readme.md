@@ -1,5 +1,6 @@
 # **Sat Solver**
 
+## Trying to write it better 
 
 ## You can build Makefile by yourself:
 ```
